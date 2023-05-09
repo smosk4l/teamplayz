@@ -10,4 +10,5 @@ const {
 router.route("/").get(getMeeting).post(setMeeting);
 router.route("/:id").delete(deleteMeeting).put(updateMeeting);
 
+
 module.exports = router;
