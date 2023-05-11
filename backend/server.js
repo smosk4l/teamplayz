@@ -7,6 +7,7 @@ connectDB()
 const app = express();
 app.use(express.json())
 app.use(express.urlencoded({extended: false}))
-app.use("/api/meetings", require("./routes/meetingsRoutes"));
+app.use("/api/meetings", require("./routes/meetingsRoute"))
+app.use("/api/users"), require("./routes/userRoute")
 app.use(errorHandler)
 app.listen(port, () => console.log(`Server started on port:${port}`));
