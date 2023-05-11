@@ -1,5 +1,5 @@
 import { useContext, useState } from "react";
-import logo from "../assets/Teamplayz_logo.png";
+import logo from "../../assets/teamplayz.jpg";
 import { HiOutlineMenuAlt4, HiOutlineX } from "react-icons/hi";
 
 const Navbar = () => {
@@ -8,9 +8,9 @@ const Navbar = () => {
 
   return (
     <nav className="sticky top-0 z-20 overflow-hidden">
-      <ul className="flex items-center gap-5 list-none px-4 py-4">
+      <ul className="flex items-center gap-5 list-none px-4 py-4 md:px-12 md:py-6">
         <li className="mr-auto">
-          <img src={logo} alt="Teamplayz logo" />
+          <img src={logo} alt="Teamplayz logo" className="md:scale-[200%]" />
         </li>
         <li>
           <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">

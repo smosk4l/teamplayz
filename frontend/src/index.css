@@ -7,3 +7,7 @@
 html {
   font-family: "Lato";
 }
+
+.blur-background {
+  @apply backdrop-filter blur-3xl bg-opacity-50;
+}
