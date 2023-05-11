@@ -12,6 +12,7 @@ export default {
       },
       textColor: {
         link: "#787F84",
+        "black-link": "#303030",
       },
     },
   },

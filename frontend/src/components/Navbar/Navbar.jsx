@@ -7,7 +7,7 @@ const Navbar = () => {
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   return (
-    <nav className="sticky top-0 z-20 overflow-hidden">
+    <nav className="sticky top-0 z-20 overflow-hidden bg-white">
       <ul className="flex items-center gap-5 list-none px-4 py-4 md:px-12 md:py-6">
         <li className="mr-auto">
           <img src={logo} alt="Teamplayz logo" className="md:scale-[200%]" />
@@ -25,7 +25,7 @@ const Navbar = () => {
       </ul>
 
       <ul
-        className={`flex items-start flex-col gap-10 ml-12 mt-24 easy-out duration-300 text-link 
+        className={`flex items-start flex-col w-full h-full  gap-10 pl-12 pt-24 easy-out duration-300 text-link overflow-hidden fixed bg-white
 
           ${
             isMenuOpen
