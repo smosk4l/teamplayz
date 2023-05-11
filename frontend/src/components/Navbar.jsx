@@ -25,16 +25,30 @@ const Navbar = () => {
       </ul>
 
       <ul
-        className={`flex items-start flex-col gap-10 ml-12 mt-24 easy-out duration-300 text-link [&>*]:hover:text-black
+        className={`flex items-start flex-col gap-10 ml-12 mt-24 easy-out duration-300 text-link 
 
-          ${isMenuOpen ? "translate-x-0" : "translate-x-full"}`}
+          ${
+            isMenuOpen
+              ? "translate-x-0 sm:translate-x-[60%] lg:translate-x-[70%] xl:translate-x-[80%]"
+              : "translate-x-full sm:translate-x-[100%]"
+          }
+          `}
       >
-        <li>
-          <a href="#">Features</a>
+        <li className="hover:text-black ">
+          <a href="#">My account</a>
         </li>
-        <li>Features</li>
-        <li>Features</li>
-        <li>Features</li>
+        <li className="hover:text-black ">
+          <a href="#">Meetings</a>
+        </li>{" "}
+        <li className="hover:text-black ">
+          <a href="#">About us</a>
+        </li>
+        <li className="hover:text-black ">
+          <a href="#">FAQ</a>
+        </li>
+        <li className="hover:text-black ">
+          <a href="#">Contact</a>
+        </li>
       </ul>
     </nav>
   );
