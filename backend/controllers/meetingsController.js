@@ -1,5 +1,5 @@
 const asyncHandler = require("express-async-handler"  );
-const Meeting = require('../models/meeting')
+const Meeting = require('../models/mettingModel')
 
 //@desc Get Meeting
 //@route GET /api/meetings
@@ -45,6 +45,6 @@ const deleteMeeting = asyncHandler(async (req, res) => {
 module.exports = {
   getMeeting,
   setMeeting,
-  updateMeeting,
+  updatedMeeting,
   deleteMeeting,
 };
