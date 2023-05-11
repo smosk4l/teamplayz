@@ -14,6 +14,9 @@ export default {
         link: "#787F84",
         "black-link": "#303030",
       },
+      screens: {
+        lx: "910px",
+      },
     },
   },
   plugins: [],
