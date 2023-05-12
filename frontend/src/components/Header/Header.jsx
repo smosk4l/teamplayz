@@ -5,8 +5,8 @@ function Header() {
   return (
     <header>
       <Navbar />
-      <main className="flex flex-col items-center  px-8 my-8 gap-12 sm:px-12 md:my-24 md:px-24 lx:flex-row lx:justify-between lx:items-start">
-        <div className="mb-5 min-w-[310px]">
+      <main className="flex flex-col items-center justify-center  px-8 my-8 gap-12 sm:px-12 md:my-24 md:px-24 lx:flex-row lx:justify-between lx:items-start">
+        <div className="min-w-[310px]">
           <h1 className="text-black-link text-3xl font-black mb-2">
             Simplify your meeting with TeamPlayz
           </h1>
@@ -23,11 +23,11 @@ function Header() {
         <img
           src={headerIlustration}
           alt="Header Ilustration, A group of friends waving"
-          className="max-w-[500px] mx-auto lx:m-0"
+          className="max-w-[300px] sm:max-w-[400px] md:max-w-[600px] lx:m-0"
         />
         <Button
           url={"/meeting/"}
-          className={"bg-blue-500 mt-3 px-24 py-3 lx:hidden"}
+          className={"bg-blue-500 px-24 py-3 lx:hidden"}
         >
           Add metting
         </Button>
