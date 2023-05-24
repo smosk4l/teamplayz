@@ -1,5 +1,5 @@
 import Navbar from "../Navbar/Navbar";
-import Button from "../UI/Button/Button";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
@@ -73,7 +73,7 @@ function RegistrationForm() {
         method="POST"
         className="flex flex-col items-center my-6"
       >
-        <div className="max-w-[500px]">
+        <div className="max-w-[500px] w-full">
           <h1 className="text-black-link text-2xl text-center font-bold mb-2">
             Create an Account
           </h1>
@@ -169,7 +169,10 @@ function RegistrationForm() {
               }
             />
             <p className="text-center mt-4">
-              Have an account? <span className="text-blue-500">Log in</span>
+              Have an account?{" "}
+              <Link to={"/login"} className="text-blue-500 underline">
+                Log in
+              </Link>
             </p>
           </div>
         </div>
