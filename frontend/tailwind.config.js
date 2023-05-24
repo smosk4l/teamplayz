@@ -7,6 +7,16 @@ export default {
         poppins: "'Lato', sans-serif;",
         lato: "Poppins', sans-serif;",
       },
+      backgroundColor: {
+        "black-button": "#303030",
+      },
+      textColor: {
+        link: "#787F84",
+        "black-link": "#303030",
+      },
+      screens: {
+        lx: "910px",
+      },
     },
   },
   plugins: [],

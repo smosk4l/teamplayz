@@ -3,12 +3,11 @@ const router = express.Router();
 const {
   getMeeting,
   setMeeting,
-  updateMeeting,
+  updatedMeeting,
   deleteMeeting,
 } = require("../controllers/meetingsController");
 
 router.route("/").get(getMeeting).post(setMeeting);
-router.route("/:id").delete(deleteMeeting).put(updateMeeting);
-
+router.route("/:id").delete(deleteMeeting).put(updatedMeeting);
 
 module.exports = router;
