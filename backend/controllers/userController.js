@@ -8,8 +8,8 @@ const { default: mongoose } = require("mongoose");
 //@route POST /api/users
 //access Public
 const registerUser = asyncHandler(async (req, res) => {
-  const { name, email, password } = req.body;
-  if (!name || !email || !password) {
+  const { firstName, lastName, email, password } = req.body;
+  if (!firstName || !lastName || !email || !password) {
     res.status(400);
     throw new Error("Please add all fields");
   }
@@ -24,14 +24,16 @@ const registerUser = asyncHandler(async (req, res) => {
   const hashedPassword = await bcrypt.hash(password, salt);
   //create user
   const user = await User.create({
-    name,
+    firstName,
+    lastName,
     email,
     password: hashedPassword,
   });
   if (user) {
     res.status(201).json({
       _id: user.id,
-      name: user.name,
+      firstName: user.firstName,
+      lastName: user.lastName,
       email: user.email,
     });
   } else {
@@ -44,18 +46,18 @@ const registerUser = asyncHandler(async (req, res) => {
 //@route POST /api/users/login
 //access Public
 const loginUser = asyncHandler(async (req, res) => {
-    const {email, password} = req.body
-    const user = await User.findOne({email})
-    if (user && user(await bcrypt.compare(password, user.password))){
-        res.json({
-            _id: user.id,
-            name: user.name,
-            email: user.email,
-        })
-    } else {
-        res.status(400)
-        throw new Error('Invalid credentials')
-    }
+  const { email, password } = req.body;
+  const user = await User.findOne({ email });
+  if (user && (await bcrypt.compare(password, user.password))) {
+    res.json({
+      _id: user.id,
+      name: user.name,
+      email: user.email,
+    });
+  } else {
+    res.status(400);
+    throw new Error("Invalid credentials");
+  }
 });
 
 //@desc Get user data

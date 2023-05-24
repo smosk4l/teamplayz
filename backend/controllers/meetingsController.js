@@ -1,37 +1,45 @@
-const asyncHandler = require("express-async-handler"  );
-const Meeting = require('../models/mettingModel')
+const asyncHandler = require("express-async-handler");
+const Meeting = require("../models/mettingModel");
 
 //@desc Get Meeting
 //@route GET /api/meetings
 //acces Private
 const getMeeting = asyncHandler(async (req, res) => {
-  const golas = await Meeting.find()
+  const golas = await Meeting.find();
   res.status(200).json({ message: "get meeting" });
 });
 //@desc SET Meetings
 //@route SET /api/meetings
 //acces Private
-const setMeeting = asyncHandler((async (req, res) => {
-  if (!req.body.text) {
+const setMeeting = asyncHandler(async (req, res) => {
+  const { user, title, description, time, location } = req.body;
+  if (!user || !title || !description || !time || !location) {
     res.status(400);
     throw new Error("Please add a text field");
   }
-  const meeting =await Meeting.create({
-    text : req.body.text
-  })
-  res.status(200).json(meeting)
-}))
-;
+  const meeting = await Meeting.create({
+    user: req.body.user,
+    title: req.body.title,
+    description: req.body.description,
+    time: req.body.time,
+    location: req.body.location,
+  });
+  res.status(200).json(meeting);
+});
 //@desc Update Meeting
 //@route PUT /api/meetings
 //acces Private
 const updatedMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id)
+  const meeting = await Meeting.findById(req.params.id);
   if (!meeting) {
-    res.status(400)
-    throw new error('Meeting not found')
+    res.status(400);
+    throw new error("Meeting not found");
   }
-  const updatedMeeting = await Meeting.findByIdAndUpdate(req.params.id, req.body, {new : true})
+  const updatedMeeting = await Meeting.findByIdAndUpdate(
+    req.params.id,
+    req.body,
+    { new: true }
+  );
 
   res.status(200).json(updatedMeeting);
 });
