@@ -1,16 +1,43 @@
+//////////////////////////////IMPORTS///////////////////////////////////////
 const asyncHandler = require("express-async-handler");
-const Meeting = require("../models/mettingModel");
+const Meeting = require("../models/meetingModel");
 
-//@desc Get Meeting
-//@route GET /api/meetings
-//acces Private
-const getMeeting = asyncHandler(async (req, res) => {
-  const golas = await Meeting.find();
-  res.status(200).json({ message: "get meeting" });
+//////////////////////////////GET///////////////////////////////////
+/// GET SINGLE MEETING
+//  @route GET /api/meetings
+//  acces Private
+const getSingleMeeting = asyncHandler(async (req, res) => {
+  const meeting = await Meeting.findById(req.params.id);
+  if (meeting) {
+    res.status(200).json(meeting);
+  } else {
+    res.status(404).json({ message: "Meeting not found" });
+  }
 });
-//@desc SET Meetings
-//@route SET /api/meetings
-//acces Private
+//  GET ALL MEETINGS
+//  @route GET /api/meetings/public
+//  acces public
+const getAllMeetings = asyncHandler(async (req, res) => {
+  const meeting = await Meeting.find();
+  if (meeting) {
+    res.status(200).json(meeting);
+  } else {
+    res.status(404).json({ message: "Meeting not found" });
+  }
+});
+/// GET ALL PUBLIC MEETING
+//  @route GET /api/meetings/public
+//  acces public
+const getPublicMeetings = asyncHandler(async (req, res) => {
+  const meetings = await Meeting.find({ private: false });
+  if (meetings.length > 0) {
+    res.status(200).json(meetings);
+  } else {
+    res.status(404).json({ message: "No public meetings found" });
+  }
+});
+//////////////////////////////SET///////////////////////////////////////
+//  CREATE NEW MEETING
 const setMeeting = asyncHandler(async (req, res) => {
   const { user, title, description, time, location } = req.body;
   if (!user || !title || !description || !time || !location) {
@@ -22,13 +49,16 @@ const setMeeting = asyncHandler(async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     time: req.body.time,
+    private: req.body.private,
     location: req.body.location,
   });
   res.status(200).json(meeting);
 });
-//@desc Update Meeting
-//@route PUT /api/meetings
+//@desc SET Meetings
+//@route SET /api/meetings
 //acces Private
+
+//////////////////////////////UPDATE///////////////////////////////////////
 const updatedMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
   if (!meeting) {
@@ -40,19 +70,26 @@ const updatedMeeting = asyncHandler(async (req, res) => {
     req.body,
     { new: true }
   );
-
   res.status(200).json(updatedMeeting);
+});
+
+//@desc Update Meeting
+//@route PUT /api/meetings
+//acces Private
+//////////////////////////////DELETE///////////////////////////////////////
+const deleteMeeting = asyncHandler(async (req, res) => {
+  res.status(200).json({ message: "delete meeting" });
 });
 //@desc Delate Meeting
 //@route DELATE /api/meetings
 //acces Private
-const deleteMeeting = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "delete meeting" });
-});
 
+//////////////////////////////EXPORTS///////////////////////////////////////
 module.exports = {
-  getMeeting,
+  getSingleMeeting,
   setMeeting,
   updatedMeeting,
   deleteMeeting,
+  getAllMeetings,
+  getPublicMeetings,
 };
