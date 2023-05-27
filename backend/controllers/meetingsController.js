@@ -14,14 +14,28 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
     res.status(404).json({ message: "Meeting not found" });
   }
 });
-//  GET ALL PUBLIC MEETINGS
+//  GET ALL MEETINGS
+//  @route GET /api/meetings/public
+//  acces public
+const getAllMeetings = asyncHandler(async (req, res) => {
+  const meeting = await Meeting.find();
+  if (meeting) {
+    res.status(200).json(meeting);
+  } else {
+    res.status(404).json({ message: "Meeting not found" });
+  }
+});
+/// GET ALL PUBLIC MEETING
 //  @route GET /api/meetings/public
 //  acces public
 const getPublicMeetings = asyncHandler(async (req, res) => {
-  const meetings = await Meeting.find();
-  res.status(200).json(meetings);
+  const meetings = await Meeting.find({ private: false });
+  if (meetings.length > 0) {
+    res.status(200).json(meetings);
+  } else {
+    res.status(404).json({ message: "No public meetings found" });
+  }
 });
-
 //////////////////////////////SET///////////////////////////////////////
 //  CREATE NEW MEETING
 const setMeeting = asyncHandler(async (req, res) => {
@@ -35,7 +49,7 @@ const setMeeting = asyncHandler(async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     time: req.body.time,
-    private : req.body.private,
+    private: req.body.private,
     location: req.body.location,
   });
   res.status(200).json(meeting);
@@ -76,5 +90,6 @@ module.exports = {
   setMeeting,
   updatedMeeting,
   deleteMeeting,
+  getAllMeetings,
   getPublicMeetings,
 };

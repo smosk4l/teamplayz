@@ -5,11 +5,12 @@ const {
   setMeeting,
   updatedMeeting,
   deleteMeeting,
-  getPublicMeetings
+  getAllMeetings,
+  getPublicMeetings,
 } = require("../controllers/meetingsController");
-
+router.route("/get/allMeetings").get(getAllMeetings);
+router.route("/get/public/meetings", getPublicMeetings);
 router.route("/:id").get(getSingleMeeting);
-router.route("/allMeetings").get(getPublicMeetings);
 router.route("/").post(setMeeting);
 router.route("/:id").delete(deleteMeeting).put(updatedMeeting);
 

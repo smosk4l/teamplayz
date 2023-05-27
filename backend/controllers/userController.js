@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const { default: mongoose } = require("mongoose");
-
 //@desc Register new user
 //@route POST /api/users
 //access Public
