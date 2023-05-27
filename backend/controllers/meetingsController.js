@@ -7,16 +7,14 @@ const Meeting = require("../models/meetingModel");
 //  @route GET /api/meetings
 //  acces Private
 const getSingleMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id)
-    .populate("user")
-    .populate("attendees", user);
-
+  const meeting = await Meeting.findById(req.params.id);
+  console.log("meeting")
   if (meeting) {
-    const { user, title, description, time, location, attendees } = meeting;
+    const { owner, title, description, time, location, attendees } = meeting;
     const attendeesCount = attendees.length;
     res.status(200).json({
       meeting: {
-        user,
+        owner,
         title,
         description,
         time,
@@ -52,13 +50,13 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 //////////////////////////////SET///////////////////////////////////////
 //  CREATE NEW MEETING
 const setMeeting = asyncHandler(async (req, res) => {
-  const { user, title, description, time, location, attendees } = req.body;
-  if (!user || !title || !description || !time || !location) {
+  const { owner, title, description, time, location } = req.body;
+  if (!owner || !title || !description || !location) {
     res.status(400);
     throw new Error("Please add a text field");
   }
   const meeting = await Meeting.create({
-    user: req.body.user,
+    owner: req.body.owner,
     title: req.body.title,
     description: req.body.description,
     time: req.body.time,
@@ -99,6 +97,52 @@ const deleteMeeting = asyncHandler(async (req, res) => {
 //@route DELATE /api/meetings
 //acces Private
 
+// ADD USER TO MEETING
+// @route POST /api/meetings/:id/attendees
+// access Private
+const addUserToMeeting = asyncHandler(async (req, res) => {
+  const meeting = await Meeting.findById(req.params.id);
+
+  if (!meeting) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+
+  const { userId } = req.body;
+
+  if (!userId) {
+    res.status(400).json({ message: "User ID is required" });
+    return;
+  }
+
+  // Sprawdź, czy użytkownik już jest uczestnikiem spotkania
+  if (meeting.attendees.includes(userId)) {
+    res.status(400).json({ message: "User is already attending the meeting" });
+    return;
+  }
+
+  meeting.attendees.push(userId);
+  await meeting.save();
+
+  res.status(200).json({ message: "User added to the meeting" });
+});
+// GET ATTENDEES OF MEETING
+// @route GET /api/meetings/:id/attendees
+// access Private
+const getAttendeesOfMeeting = asyncHandler(async (req, res) => {
+  const meeting = await Meeting.findById(req.params.id).populate(
+    "attendees",
+    "name email"
+  ); // Populacja danych użytkowników
+
+  if (!meeting) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+
+  res.status(200).json({ attendees: meeting.attendees });
+});
+
 //////////////////////////////EXPORTS///////////////////////////////////////
 module.exports = {
   getSingleMeeting,
@@ -107,4 +151,6 @@ module.exports = {
   deleteMeeting,
   getAllMeetings,
   getPublicMeetings,
+  addUserToMeeting,
+  getAttendeesOfMeeting,
 };
