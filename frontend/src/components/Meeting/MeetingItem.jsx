@@ -1,7 +1,7 @@
 import { IoLocationOutline, IoHeartOutline } from "react-icons/io5";
 import Navbar from "../Navbar/Navbar";
 
-function MettingList(props) {
+function MeetingItem(props) {
   return (
     <>
       <Navbar />
@@ -36,4 +36,4 @@ function MettingList(props) {
   );
 }
 
-export default MettingList;
+export default MeetingItem;
