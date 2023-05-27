@@ -7,9 +7,23 @@ const Meeting = require("../models/meetingModel");
 //  @route GET /api/meetings
 //  acces Private
 const getSingleMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id);
+  const meeting = await Meeting.findById(req.params.id)
+    .populate("user")
+    .populate("attendees", user);
+
   if (meeting) {
-    res.status(200).json(meeting);
+    const { user, title, description, time, location, attendees } = meeting;
+    const attendeesCount = attendees.length;
+    res.status(200).json({
+      meeting: {
+        user,
+        title,
+        description,
+        time,
+        location,
+        attendeesCount,
+      },
+    });
   } else {
     res.status(404).json({ message: "Meeting not found" });
   }
@@ -30,16 +44,15 @@ const getAllMeetings = asyncHandler(async (req, res) => {
 //  acces public
 const getPublicMeetings = asyncHandler(async (req, res) => {
   const meetings = await Meeting.find({ private: false });
-  if (meetings.length > 0) {
-    res.status(200).json(meetings);
-  } else {
-    res.status(404).json({ message: "No public meetings found" });
-  }
+  res.status(200).json(meetings);
 });
+// GET ALL ACTIVE USER MEETINGS
+// @route
+
 //////////////////////////////SET///////////////////////////////////////
 //  CREATE NEW MEETING
 const setMeeting = asyncHandler(async (req, res) => {
-  const { user, title, description, time, location } = req.body;
+  const { user, title, description, time, location, attendees } = req.body;
   if (!user || !title || !description || !time || !location) {
     res.status(400);
     throw new Error("Please add a text field");
@@ -50,6 +63,8 @@ const setMeeting = asyncHandler(async (req, res) => {
     description: req.body.description,
     time: req.body.time,
     private: req.body.private,
+    attendees: req.body.attendees,
+    attendeesCount: req.body.attendeesCount,
     location: req.body.location,
   });
   res.status(200).json(meeting);
