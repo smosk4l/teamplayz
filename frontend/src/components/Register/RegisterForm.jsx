@@ -1,5 +1,5 @@
 import Navbar from "../Navbar/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 
@@ -10,37 +10,21 @@ function RegistrationForm() {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
+  const [errors, setErrors] = useState([]);
 
+  const navigate = useNavigate();
+  console.log(errors);
   const handleSubmit = async (event) => {
+    setErrors([]);
     event.preventDefault();
-    // Walidacja pól
-    if (firstName.trim() === "") {
-      alert("Proszę wprowadzić imię.");
-      return;
-    }
-
-    if (lastName.trim() === "") {
-      alert("Proszę wprowadzić nazwisko.");
-      return;
-    }
-
-    if (email.trim() === "") {
-      alert("Proszę wprowadzić adres e-mail.");
-      return;
-    }
-
-    if (password.trim() === "") {
-      alert("Proszę wprowadzić hasło.");
-      return;
-    }
 
     if (password !== confirmPassword) {
-      alert("Potwierdzenie hasła nie pasuje do hasła.");
+      setErrors((prev) => [...prev, "Podane hasła nie są takie same"]);
       return;
     }
 
     if (!isTermsAccepted) {
-      alert("Proszę zaakceptować regulamin.");
+      setErrors((prev) => [...prev, "Proszę zaakceptować regulamin."]);
       return;
     }
 
@@ -55,6 +39,15 @@ function RegistrationForm() {
       });
 
       alert("Rejestracja udana. Możesz teraz się zalogować.");
+
+      setFirstName("");
+      setLastName("");
+      setEmail("");
+      setPassword("");
+      setConfirmPassword("");
+      setIsTermsAccepted(false);
+
+      navigate("/login");
     } catch (error) {
       console.error(error);
       alert("Rejestracja nie powiodła się. Spróbuj ponownie.");
@@ -68,6 +61,16 @@ function RegistrationForm() {
   return (
     <>
       <Navbar />
+      {errors && errors.length > 0 && (
+        <div className="bg-red-500 w-full min-h-[4rem] relative top-0">
+          <ul>
+            {errors.map((error) => {
+              return <li key={crypto.randomUUID()}>{error}</li>;
+            })}
+          </ul>
+        </div>
+      )}
+
       <form
         onSubmit={handleSubmit}
         method="POST"

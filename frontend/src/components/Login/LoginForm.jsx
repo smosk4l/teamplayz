@@ -1,16 +1,38 @@
 import { Link } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
-import Button from "../UI/Button/Button";
+import axios from "axios";
 import { useState } from "react";
 
 function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    if (email.trim() === "") {
+      alert("Proszę wprowadzić adres e-mail.");
+      return;
+    }
+
+    if (password.trim() === "") {
+      alert("Proszę wprowadzić hasło.");
+      return;
+    }
+    try {
+      await axios.post("http://localhost:8000/api/users/login", {
+        email,
+        password,
+      });
+      alert("Logowanie działa.");
+    } catch (error) {
+      console.error(error);
+      alert("Logowanie nie działa.");
+    }
+  };
   return (
     <>
       <Navbar />
-      <form className="flex flex-col items-center my-6">
+      <form onSubmit={handleSubmit} className="flex flex-col items-center my-6">
         <div className="max-w-[500px] w-full">
           <h1 className="text-black-link text-2xl text-center font-bold mb-2">
             Log in to your account
@@ -49,10 +71,13 @@ function Login() {
               <span className="text-blue-500 underline">Reset</span>
             </label>
 
-            <Button type={"submit"} className={"bg-blue-500 mt-6 w-full py-3"}>
-              Login
-            </Button>
-
+            <input
+              type="submit"
+              value="Login"
+              className={
+                "text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3"
+              }
+            />
             <p className="text-center mt-4">
               Don't have an account?{" "}
               <Link to={"/signin"} className="text-blue-500 underline">
