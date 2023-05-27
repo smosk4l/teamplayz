@@ -1,10 +1,8 @@
 import { IoLocationOutline, IoHeartOutline } from "react-icons/io5";
-import Navbar from "../Navbar/Navbar";
 
 function MeetingItem(props) {
   return (
     <>
-      <Navbar />
       <div className="max-w-[1440px]  mt-4 mx-6 xl:mx-auto">
         <div className="px-6 py-4 bg-white my-2 rounded-xl relative">
           <ul>
