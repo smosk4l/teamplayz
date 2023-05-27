@@ -8,9 +8,9 @@ const {
   updateUser,
 } = require("../controllers/userController.js");
 
-router.post("/", registerUser);
-router.post("/login", loginUser);
 router.get("/me", getMe);
+router.post("/", registerUser);
+router.post("/", loginUser);
 router.delete("/:id", deleteUser);
 router.route("/:id").put(updateUser);
 

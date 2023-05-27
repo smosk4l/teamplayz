@@ -22,12 +22,22 @@ const meetingSchema = mongoose.Schema(
     },
     location: {
       type: String,
-      required: [true, "Please add location url"],
+      required: [true, "Please add location name"],
     },
     private: {
-      type : Boolean,
-      default : false
-    }
+      type: Boolean,
+      default: false,
+    },
+    attendees: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    attendeesCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
