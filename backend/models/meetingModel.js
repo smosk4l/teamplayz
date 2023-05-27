@@ -24,6 +24,10 @@ const meetingSchema = mongoose.Schema(
       type: String,
       required: [true, "Please add location url"],
     },
+    private: {
+      type : Boolean,
+      default : false
+    }
   },
   {
     timestamps: true,
