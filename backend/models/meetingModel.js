@@ -13,7 +13,7 @@ const meetingSchema = mongoose.Schema(
     },
     description: {
       type: String,
-      required: true,
+      required: [true, "Please add a description"],
       maxlength: 100,
     },
     time: {
@@ -25,6 +25,10 @@ const meetingSchema = mongoose.Schema(
     location: {
       type: String,
       required: true,
+    },
+    tag: {
+      type: String,
+      required: [true, "Please add a tag for meeting"],
     },
     private: {
       type: Boolean,
