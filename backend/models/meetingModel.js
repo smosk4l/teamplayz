@@ -1,30 +1,30 @@
 const mongoose = require("mongoose");
+
 const meetingSchema = mongoose.Schema(
   {
-    owner : {
+    owner: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true],
+      required: true,
       ref: "User",
     },
     title: {
       type: String,
-      required: [true, "Please add a title"],
+      required: true,
     },
     description: {
       type: String,
-      required: [true, "Please add a description"],
-      maxlength : 100,
-      
+      required: true,
+      maxlength: 100,
     },
     time: {
       type: Date,
+      required: true,
       min: Date.now(),
       max: "2025-01-01",
-      required: [true, "Please add a valid date"],
     },
     location: {
       type: String,
-      required: [true, "Please add location name"],
+      required: true,
     },
     private: {
       type: Boolean,
@@ -36,13 +36,20 @@ const meetingSchema = mongoose.Schema(
         ref: "User",
       },
     ],
-    attendeesCount: {
+    attendeesSlots: {
       type: Number,
-      default: 0,
+      required: true,
+      validate: {
+        validator: function (value) {
+          return value <= 30;
+        },
+        message: "Number of attendee slots cannot exceed 30.",
+      },
     },
   },
   {
     timestamps: true,
   }
 );
+
 module.exports = mongoose.model("Meeting", meetingSchema);

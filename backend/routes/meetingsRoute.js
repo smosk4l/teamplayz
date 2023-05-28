@@ -7,11 +7,17 @@ const {
   deleteMeeting,
   getAllMeetings,
   getPublicMeetings,
+  addUserToMeeting,
+  getAttendeesOfMeeting,
 } = require("../controllers/meetingsController");
-router.route("/allMeetings").get(getAllMeetings);
-router.route("/public").get(getPublicMeetings);
-router.route("/single/:id").get(getSingleMeeting);
-router.route("/createMeeting").post(setMeeting);
-router.route("/:id").delete(deleteMeeting).put(updatedMeeting);
+
+router.get("/allMeetings", getAllMeetings);
+router.get("/public", getPublicMeetings);
+router.get("/single/:id", getSingleMeeting);
+router.post("/createMeeting", setMeeting);
+router.put("/:id", updatedMeeting);
+router.delete("/:id", deleteMeeting);
+router.post("/:id/attendees", addUserToMeeting);
+router.get("/:id/attendees", getAttendeesOfMeeting);
 
 module.exports = router;
