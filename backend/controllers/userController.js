@@ -123,12 +123,10 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 module.exports = {
   registerUser,
   loginUser,
   getMe,
   deleteUser,
-  updateUser
+  updateUser,
 };
