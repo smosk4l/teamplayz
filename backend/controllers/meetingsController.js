@@ -1,17 +1,13 @@
-//////////////////////////////IMPORTS///////////////////////////////////////
 const asyncHandler = require("express-async-handler");
+const mongoose = require("mongoose");
 const Meeting = require("../models/meetingModel");
 
-//////////////////////////////GET///////////////////////////////////
-/// GET SINGLE MEETING
-//  @route GET /api/meetings
-//  acces Private
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
-  console.log("meeting");
+          
   if (meeting) {
     const { owner, title, description, time, location, attendees } = meeting;
-    const attendeesCount = attendees.length;
+    const attendeesCount = attendees.length ;
     res.status(200).json({
       meeting: {
         owner,
@@ -26,29 +22,21 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
     res.status(404).json({ message: "Meeting not found" });
   }
 });
-//  GET ALL MEETINGS
-//  @route GET /api/meetings/public
-//  acces public
+
 const getAllMeetings = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.find();
-  if (meeting) {
-    res.status(200).json(meeting);
+  const meetings = await Meeting.find();
+  if (meetings) {
+    res.status(200).json(meetings);
   } else {
-    res.status(404).json({ message: "Meeting not found" });
+    res.status(404).json({ message: "Meetings not found" });
   }
 });
-/// GET ALL PUBLIC MEETING
-//  @route GET /api/meetings/public
-//  acces public
+
 const getPublicMeetings = asyncHandler(async (req, res) => {
   const meetings = await Meeting.find({ private: false });
   res.status(200).json(meetings);
 });
-// GET ALL ACTIVE USER MEETINGS
-// @route
 
-//////////////////////////////SET///////////////////////////////////////
-//  CREATE NEW MEETING
 const setMeeting = asyncHandler(async (req, res) => {
   const { owner, title, description, time, location, tag } = req.body;
   if (!owner || !title || !description || !location || !tag) {
@@ -68,16 +56,12 @@ const setMeeting = asyncHandler(async (req, res) => {
   });
   res.status(200).json(meeting);
 });
-//@desc SET Meetings
-//@route SET /api/meetings
-//acces Private
 
-//////////////////////////////UPDATE///////////////////////////////////////
 const updatedMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
   if (!meeting) {
-    res.status(400);
-    throw new error("Meeting not found");
+    res.status(404).json({ message: "Meeting not found" });
+    return;
   }
   const updatedMeeting = await Meeting.findByIdAndUpdate(
     req.params.id,
@@ -87,20 +71,16 @@ const updatedMeeting = asyncHandler(async (req, res) => {
   res.status(200).json(updatedMeeting);
 });
 
-//@desc Update Meeting
-//@route PUT /api/meetings
-//acces Private
-//////////////////////////////DELETE///////////////////////////////////////
 const deleteMeeting = asyncHandler(async (req, res) => {
-  res.status(200).json({ message: "delete meeting" });
+  const meeting = await Meeting.findById(req.params.id);
+  if (!meeting) {
+    res.status(404).json({ message: "Meeting not found" });
+    return;
+  }
+  await meeting.remove();
+  res.status(200).json({ message: "Meeting deleted" });
 });
-//@desc Delate Meeting
-//@route DELATE /api/meetings
-//acces Private
 
-// ADD USER TO MEETING
-// @route POST /api/meetings/:id/attendees
-// access Private
 const addUserToMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
 
@@ -116,7 +96,11 @@ const addUserToMeeting = asyncHandler(async (req, res) => {
     return;
   }
 
-  // Sprawdź, czy użytkownik już jest uczestnikiem spotkania
+  if (!mongoose.Types.ObjectId.isValid(userId)) {
+    res.status(400).json({ message: "Invalid User ID" });
+    return;
+  }
+
   if (meeting.attendees.includes(userId)) {
     res.status(400).json({ message: "User is already attending the meeting" });
     return;
@@ -127,14 +111,12 @@ const addUserToMeeting = asyncHandler(async (req, res) => {
 
   res.status(200).json({ message: "User added to the meeting" });
 });
-// GET ATTENDEES OF MEETING
-// @route GET /api/meetings/:id/attendees
-// access Private
+
 const getAttendeesOfMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id).populate(
     "attendees",
     "name email"
-  ); // Populacja danych użytkowników
+  );
 
   if (!meeting) {
     res.status(404).json({ message: "Meeting not found" });
@@ -144,7 +126,6 @@ const getAttendeesOfMeeting = asyncHandler(async (req, res) => {
   res.status(200).json({ attendees: meeting.attendees });
 });
 
-//////////////////////////////EXPORTS///////////////////////////////////////
 module.exports = {
   getSingleMeeting,
   setMeeting,
