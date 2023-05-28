@@ -78,7 +78,7 @@ const getMe = asyncHandler(async (req, res) => {
     throw new Error("User not found");
   }
 });
-//@desc DELATE ACCOUNT 
+//@desc DELATE ACCOUNT
 //@desc Delete user
 //@route DELETE /api/users/:id
 //access Private

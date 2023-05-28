@@ -4,7 +4,7 @@ const meetingSchema = mongoose.Schema(
   {
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      // required: true,
+      required: true,
       ref: "User",
     },
     title: {
@@ -13,7 +13,7 @@ const meetingSchema = mongoose.Schema(
     },
     description: {
       type: String,
-      required: [true, "Please add a description"],
+      required: true,
       maxlength: 100,
     },
     time: {
@@ -25,10 +25,6 @@ const meetingSchema = mongoose.Schema(
     location: {
       type: String,
       required: true,
-    },
-    tag: {
-      type: String,
-      required: [true, "Please add a tag for meeting"],
     },
     private: {
       type: Boolean,
@@ -43,12 +39,6 @@ const meetingSchema = mongoose.Schema(
     attendeesSlots: {
       type: Number,
       required: true,
-      validate: {
-        validator: function (value) {
-          return value <= 30;
-        },
-        message: "Number of attendee slots cannot exceed 30.",
-      },
     },
   },
   {
@@ -56,4 +46,6 @@ const meetingSchema = mongoose.Schema(
   }
 );
 
-module.exports = mongoose.model("Meeting", meetingSchema);
+const Meeting = mongoose.model("Meeting", meetingSchema);
+
+module.exports = Meeting;

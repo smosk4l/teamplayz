@@ -4,10 +4,10 @@ const Meeting = require("../models/meetingModel");
 
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
-          
+
   if (meeting) {
     const { owner, title, description, time, location, attendees } = meeting;
-    const attendeesCount = attendees.length ;
+    const attendeesSlots = meeting.attendeesSlots;
     res.status(200).json({
       meeting: {
         owner,
@@ -15,7 +15,7 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
         description,
         time,
         location,
-        attendeesCount,
+        attendeesSlots,
       },
     });
   } else {
@@ -38,23 +38,28 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 });
 
 const setMeeting = asyncHandler(async (req, res) => {
-  const { owner, title, description, time, location, tag } = req.body;
-  if (!owner || !title || !description || !location || !tag) {
-    res.status(400);
-    throw new Error("Please add a text field");
+  const { owner, title, description, time, location, attendeesSlots } =
+    req.body;
+  if (!owner || !title || !description || !location || !attendeesSlots) {
+    res.status(400).json({ message: "Please add all required fields" });
+    return;
   }
-  const meeting = await Meeting.create({
-    owner: req.body.owner,
-    title: req.body.title,
-    description: req.body.description,
-    time: req.body.time,
-    tag: req.body.tag,
-    private: req.body.private,
-    attendees: req.body.attendees,
-    attendeesCount: req.body.attendeesCount,
-    location: req.body.location,
+  const meeting = new Meeting({
+    owner,
+    title,
+    description,
+    time,
+    location,
+    attendees: [],
+    private: req.body.private || false,
+    attendeesSlots,
   });
-  res.status(200).json(meeting);
+  try {
+    const savedMeeting = await meeting.save();
+    res.status(200).json(savedMeeting);
+  } catch (error) {
+    res.status(500).json({ message: "Failed to create meeting" });
+  }
 });
 
 const updatedMeeting = asyncHandler(async (req, res) => {
@@ -106,7 +111,13 @@ const addUserToMeeting = asyncHandler(async (req, res) => {
     return;
   }
 
+  if (meeting.attendees.length >= meeting.attendeesSlots) {
+    res.status(400).json({ message: "Meeting is already full" });
+    return;
+  }
+
   meeting.attendees.push(userId);
+  meeting.attendeesSlots -= 1;
   await meeting.save();
 
   res.status(200).json({ message: "User added to the meeting" });
@@ -126,6 +137,19 @@ const getAttendeesOfMeeting = asyncHandler(async (req, res) => {
   res.status(200).json({ attendees: meeting.attendees });
 });
 
+const getUserActiveMeetings = asyncHandler(async (req, res) => {
+  const userId = req.params.userId;
+
+  const meetings = await Meeting.find({ owner: userId });
+
+  if (meetings.length === 0) {
+    res.status(404).json({ message: "No active meetings found for the user" });
+    return;
+  }
+
+  res.status(200).json(meetings);
+});
+
 module.exports = {
   getSingleMeeting,
   setMeeting,
@@ -135,4 +159,5 @@ module.exports = {
   getPublicMeetings,
   addUserToMeeting,
   getAttendeesOfMeeting,
+  getUserActiveMeetings,
 };
