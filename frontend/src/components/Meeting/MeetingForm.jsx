@@ -39,9 +39,10 @@ function MeetingForm() {
       await axios.post("http://localhost:8000/api/meetings/createMeeting", {
         title,
         description,
-        date,
+        time: date,
         location,
         tag,
+        attendeesSlots: maxSlots,
       });
       alert("Dodano do bazy");
     } catch (error) {

@@ -42,7 +42,7 @@ const meetingSchema = mongoose.Schema(
     ],
     attendeesSlots: {
       type: Number,
-      required: true,
+      // required: true,
       validate: {
         validator: function (value) {
           return value <= 30;
