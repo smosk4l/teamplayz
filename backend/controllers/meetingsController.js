@@ -8,7 +8,7 @@ const Meeting = require("../models/meetingModel");
 //  acces Private
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
-  console.log("meeting")
+  console.log("meeting");
   if (meeting) {
     const { owner, title, description, time, location, attendees } = meeting;
     const attendeesCount = attendees.length;
@@ -50,8 +50,8 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 //////////////////////////////SET///////////////////////////////////////
 //  CREATE NEW MEETING
 const setMeeting = asyncHandler(async (req, res) => {
-  const { owner, title, description, time, location } = req.body;
-  if (!owner || !title || !description || !location) {
+  const { owner, title, description, time, location, tag } = req.body;
+  if (!owner || !title || !description || !location || !tag) {
     res.status(400);
     throw new Error("Please add a text field");
   }
@@ -60,6 +60,7 @@ const setMeeting = asyncHandler(async (req, res) => {
     title: req.body.title,
     description: req.body.description,
     time: req.body.time,
+    tag: req.body.tag,
     private: req.body.private,
     attendees: req.body.attendees,
     attendeesCount: req.body.attendeesCount,

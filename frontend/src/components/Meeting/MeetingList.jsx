@@ -28,6 +28,7 @@ function MeetingList() {
         <MeetingItem
           key={crypto.randomUUID()}
           title={meeting.title}
+          tag={meeting.tag}
           location={meeting.location}
           description={meeting.description}
           players={meeting.attendees.length}
