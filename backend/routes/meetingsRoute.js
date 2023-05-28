@@ -9,11 +9,13 @@ const {
   getPublicMeetings,
   addUserToMeeting,
   getAttendeesOfMeeting,
+  getUserActiveMeetings,
 } = require("../controllers/meetingsController");
 
 router.get("/allMeetings", getAllMeetings);
 router.get("/public", getPublicMeetings);
 router.get("/single/:id", getSingleMeeting);
+router.get("/userActiveMeeting/:userId", getUserActiveMeetings);
 router.post("/createMeeting", setMeeting);
 router.put("/:id", updatedMeeting);
 router.delete("/:id", deleteMeeting);
