@@ -5,6 +5,7 @@ const Meeting = require("../models/meetingModel");
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
 
+
   if (meeting) {
     const { owner, title, description, time, location, attendees } = meeting;
     const attendeesSlots = meeting.attendeesSlots;
@@ -43,6 +44,10 @@ const setMeeting = asyncHandler(async (req, res) => {
   if (!owner || !title || !description || !location || !attendeesSlots) {
     res.status(400).json({ message: "Please add all required fields" });
     return;
+  const { title, description, time, location, tag } = req.body;
+  if (!title || !description || !location || !tag) {
+    res.status(400);
+    throw new Error("Please add a text field");
   }
   const meeting = new Meeting({
     owner,
@@ -51,7 +56,7 @@ const setMeeting = asyncHandler(async (req, res) => {
     time,
     location,
     attendees: [],
-    private: req.body.private || false,
+    private: req.body.private,
     attendeesSlots,
   });
   try {

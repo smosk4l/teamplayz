@@ -38,7 +38,13 @@ const meetingSchema = mongoose.Schema(
     ],
     attendeesSlots: {
       type: Number,
-      required: true,
+      // required: true,
+      validate: {
+        validator: function (value) {
+          return value <= 30;
+        },
+        message: "Number of attendee slots cannot exceed 30.",
+      },
     },
   },
   {

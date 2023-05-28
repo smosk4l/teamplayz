@@ -14,7 +14,7 @@ function Header() {
             Make meeting planning a breeze with TeamPlayz
           </h2>
           <Button
-            url={"/meeting/"}
+            url={"/meetings/create"}
             className={"bg-blue-500 mt-6 px-24 py-3 hidden lx:inline-block"}
           >
             Add metting
@@ -26,7 +26,7 @@ function Header() {
           className="max-w-[300px] sm:max-w-[400px] md:max-w-[600px] lx:m-0"
         />
         <Button
-          url={"/meeting/"}
+          url={"/meetings/create"}
           className={"bg-blue-500 px-24 py-3 lx:hidden"}
         >
           Add metting
