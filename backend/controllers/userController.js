@@ -1,9 +1,7 @@
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
-const mongoose = require("mongoose");
 const generateToken = require("../config/getToken");
-
 //@desc Register new user
 //@route POST /api/users
 //access Public
@@ -30,15 +28,11 @@ const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   });
   if (user) {
-    // Generowanie tokena JWT
-    const token = generateToken(user._id);
-    
     res.status(201).json({
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
-      token,
     });
   } else {
     res.status(400);
@@ -55,39 +49,23 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     // Generowanie tokena JWT
     const token = generateToken(user._id);
-    
-    res.json({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      token,
-    });
+
+    res
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .status(200)
+      .json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+      });
   } else {
     res.status(400);
     throw new Error("Invalid credentials");
   }
 });
 
-//@desc Get user data
-//@route GET /api/users/me
-//access Public
-const getMe = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user.id);
-
-  if (user) {
-    res.json({
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
-  }
-});
-//@desc DELATE ACCOUNT
 //@desc Delete user
 //@route DELETE /api/users/:id
 //access Private
@@ -132,10 +110,14 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
+const getAuth = asyncHandler(async (req, res) => {
+  res.json("You got the private route");
+});
+
 module.exports = {
   registerUser,
   loginUser,
-  getMe,
   deleteUser,
   updateUser,
+  getAuth,
 };
