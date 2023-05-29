@@ -1,25 +1,23 @@
 const express = require("express");
 const router = express.Router();
 const {
+  getAllMeetings,
+  getPublicMeetings,
   getSingleMeeting,
   setMeeting,
   updatedMeeting,
   deleteMeeting,
-  getAllMeetings,
-  getPublicMeetings,
   addUserToMeeting,
   getAttendeesOfMeeting,
-  getUserActiveMeetings,
 } = require("../controllers/meetingsController");
 
-router.get("/allMeetings", getAllMeetings);
+router.get("/", getAllMeetings);
 router.get("/public", getPublicMeetings);
-router.get("/single/:id", getSingleMeeting);
-router.get("/userActiveMeeting/:userId", getUserActiveMeetings);
-router.post("/createMeeting", setMeeting);
+router.get("/:id", getSingleMeeting);
+router.post("/", setMeeting);
 router.put("/:id", updatedMeeting);
 router.delete("/:id", deleteMeeting);
-router.post("/:id/attendees", addUserToMeeting);
+router.post("/:id/addUser", addUserToMeeting);
 router.get("/:id/attendees", getAttendeesOfMeeting);
 
 module.exports = router;

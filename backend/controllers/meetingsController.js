@@ -1,6 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const mongoose = require("mongoose");
 const Meeting = require("../models/meetingModel");
+const { protect } = require("../middleware/authMiddleware");
 
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
@@ -38,128 +39,109 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 });
 
 const setMeeting = asyncHandler(async (req, res) => {
-  // TODO add owner
-  const { title, description, time, location, attendeesSlots, tag } = req.body;
-  if (!title || !description || !location || !attendeesSlots) {
+  const { userId, title, description, time, location, attendeesSlots, tag } =
+    req.body;
+  if (!userId || !title || !description || !location || !attendeesSlots) {
     res.status(400).json({ message: "Please add all required fields" });
     return;
   }
   const meeting = new Meeting({
-    // owner,
+    owner: userId,
     title,
     tag,
     description,
     time,
     location,
-    attendees: [],
+    attendees: [userId],
     private: req.body.private,
     attendeesSlots,
   });
   console.log(meeting.tag);
   try {
     const savedMeeting = await meeting.save();
-    res.status(200).json(savedMeeting);
+    res.status(200).json({ message: "Meeting added", meeting: savedMeeting });
   } catch (error) {
-    res.status(500).json({ message: "Failed to create meeting" });
+    res.status(500).json({ message: error });
   }
 });
 
 const updatedMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id);
-  if (!meeting) {
+  const { id } = req.params;
+  const { title, description, time, location, attendeesSlots, tag } = req.body;
+
+  const meeting = await Meeting.findById(id);
+
+  if (meeting) {
+    meeting.title = title || meeting.title;
+    meeting.description = description || meeting.description;
+    meeting.time = time || meeting.time;
+    meeting.location = location || meeting.location;
+    meeting.attendeesSlots = attendeesSlots || meeting.attendeesSlots;
+    meeting.tag = tag || meeting.tag;
+
+    const updatedMeeting = await meeting.save();
+    res.status(200).json({
+      message: "Meeting updated",
+      meeting: updatedMeeting,
+    });
+  } else {
     res.status(404).json({ message: "Meeting not found" });
-    return;
   }
-  const updatedMeeting = await Meeting.findByIdAndUpdate(
-    req.params.id,
-    req.body,
-    { new: true }
-  );
-  res.status(200).json(updatedMeeting);
 });
 
 const deleteMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id);
-  if (!meeting) {
+  const { id } = req.params;
+
+  const meeting = await Meeting.findById(id);
+
+  if (meeting) {
+    await meeting.remove();
+    res.status(200).json({ message: "Meeting removed" });
+  } else {
     res.status(404).json({ message: "Meeting not found" });
-    return;
   }
-  await meeting.remove();
-  res.status(200).json({ message: "Meeting deleted" });
 });
 
 const addUserToMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id);
-
-  if (!meeting) {
-    res.status(404).json({ message: "Meeting not found" });
-    return;
-  }
-
+  const { id } = req.params;
   const { userId } = req.body;
 
-  if (!userId) {
-    res.status(400).json({ message: "User ID is required" });
-    return;
+  const meeting = await Meeting.findById(id);
+
+  if (meeting) {
+    if (meeting.attendees.includes(userId)) {
+      res.status(400).json({ message: "User already attending the meeting" });
+    } else if (meeting.attendees.length >= meeting.attendeesSlots) {
+      res.status(400).json({ message: "Meeting is already full" });
+    } else {
+      meeting.attendees.push(userId);
+      await meeting.save();
+      res.status(200).json({ message: "User added to the meeting" });
+    }
+  } else {
+    res.status(404).json({ message: "Meeting not found" });
   }
-
-  if (!mongoose.Types.ObjectId.isValid(userId)) {
-    res.status(400).json({ message: "Invalid User ID" });
-    return;
-  }
-
-  if (meeting.attendees.includes(userId)) {
-    res.status(400).json({ message: "User is already attending the meeting" });
-    return;
-  }
-
-  if (meeting.attendees.length >= meeting.attendeesSlots) {
-    res.status(400).json({ message: "Meeting is already full" });
-    return;
-  }
-
-  meeting.attendees.push(userId);
-  meeting.attendeesSlots -= 1;
-  await meeting.save();
-
-  res.status(200).json({ message: "User added to the meeting" });
 });
 
 const getAttendeesOfMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id).populate(
-    "attendees",
-    "name email"
-  );
+  const { id } = req.params;
 
-  if (!meeting) {
+  const meeting = await Meeting.findById(id).populate("attendees", "-password");
+
+  if (meeting) {
+    res.status(200).json({ attendees: meeting.attendees });
+  } else {
     res.status(404).json({ message: "Meeting not found" });
-    return;
   }
-
-  res.status(200).json({ attendees: meeting.attendees });
-});
-
-const getUserActiveMeetings = asyncHandler(async (req, res) => {
-  const userId = req.params.userId;
-
-  const meetings = await Meeting.find({ owner: userId });
-
-  if (meetings.length === 0) {
-    res.status(404).json({ message: "No active meetings found for the user" });
-    return;
-  }
-
-  res.status(200).json(meetings);
 });
 
 module.exports = {
+  getAllMeetings,
+  getPublicMeetings,
   getSingleMeeting,
   setMeeting,
   updatedMeeting,
   deleteMeeting,
-  getAllMeetings,
-  getPublicMeetings,
   addUserToMeeting,
   getAttendeesOfMeeting,
-  getUserActiveMeetings,
 };

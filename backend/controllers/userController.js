@@ -2,6 +2,7 @@ const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
 const mongoose = require("mongoose");
+const generateToken = require("../config/getToken");
 
 //@desc Register new user
 //@route POST /api/users
@@ -29,11 +30,15 @@ const registerUser = asyncHandler(async (req, res) => {
     password: hashedPassword,
   });
   if (user) {
+    // Generowanie tokena JWT
+    const token = generateToken(user._id);
+    
     res.status(201).json({
-      _id: user.id,
+      _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      token,
     });
   } else {
     res.status(400);
@@ -48,11 +53,15 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user && (await bcrypt.compare(password, user.password))) {
+    // Generowanie tokena JWT
+    const token = generateToken(user._id);
+    
     res.json({
-      _id: user.id,
+      _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
+      token,
     });
   } else {
     res.status(400);
