@@ -1,6 +1,7 @@
 import Navbar from "../Navbar/Navbar";
 import headerIlustration from "../../assets/header_ilustration.png";
 import Button from "../UI/Button/Button";
+
 function Header() {
   return (
     <header>
