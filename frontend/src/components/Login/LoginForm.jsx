@@ -2,8 +2,10 @@ import { Link } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { useState } from "react";
+import useAuthStore from "../../state/authState";
 
 function Login() {
+  const { setUser } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
@@ -19,10 +21,14 @@ function Login() {
       return;
     }
     try {
-      await axios.post("http://localhost:8000/api/users/login", {
-        email,
-        password,
-      });
+      const { data } = await axios.post(
+        "http://localhost:8000/api/users/login",
+        {
+          email,
+          password,
+        }
+      );
+      setUser(data);
       alert("Logowanie działa.");
     } catch (error) {
       console.error(error);
