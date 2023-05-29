@@ -4,7 +4,7 @@ const meetingSchema = mongoose.Schema(
   {
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      required: true,
+      // required: true,
       ref: "User",
     },
     title: {
@@ -21,6 +21,10 @@ const meetingSchema = mongoose.Schema(
       required: true,
       min: Date.now(),
       max: "2025-01-01",
+    },
+    tag: {
+      type: String,
+      required: [true, "Please add a tag for meeting"],
     },
     location: {
       type: String,
