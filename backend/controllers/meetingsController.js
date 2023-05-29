@@ -1,7 +1,5 @@
 const asyncHandler = require("express-async-handler");
-const mongoose = require("mongoose");
 const Meeting = require("../models/meetingModel");
-const { protect } = require("../middleware/authMiddleware");
 
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
