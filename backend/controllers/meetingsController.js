@@ -1,19 +1,20 @@
 const asyncHandler = require("express-async-handler");
 const Meeting = require("../models/meetingModel");
-
+//GETS
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
-
   if (meeting) {
-    const { owner, title, description, time, location, attendees } = meeting;
+    const { owner, title, description, time, location, attendees, tag } = meeting;
     const attendeesSlots = meeting.attendeesSlots;
     res.status(200).json({
       meeting: {
+        tag,
         owner,
         title,
         description,
         time,
         location,
+        attendees,
         attendeesSlots,
       },
     });
@@ -22,24 +23,15 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
   }
 });
 
-const getAllMeetings = asyncHandler(async (req, res) => {
-  const meetings = await Meeting.find();
-  if (meetings) {
-    res.status(200).json(meetings);
-  } else {
-    res.status(404).json({ message: "Meetings not found" });
-  }
-});
 
 const getPublicMeetings = asyncHandler(async (req, res) => {
   const meetings = await Meeting.find({ private: false });
   res.status(200).json(meetings);
 });
-
 const setMeeting = asyncHandler(async (req, res) => {
   const { userId, title, description, time, location, attendeesSlots, tag } =
     req.body;
-  if (!userId || !title || !description || !location || !attendeesSlots) {
+  if (!userId || !title || !description || !location || !attendeesSlots || !tag) {
     res.status(400).json({ message: "Please add all required fields" });
     return;
   }
@@ -54,7 +46,6 @@ const setMeeting = asyncHandler(async (req, res) => {
     private: req.body.private,
     attendeesSlots,
   });
-  console.log(meeting.tag);
   try {
     const savedMeeting = await meeting.save();
     res.status(200).json({ message: "Meeting added", meeting: savedMeeting });
@@ -130,6 +121,22 @@ const getAttendeesOfMeeting = asyncHandler(async (req, res) => {
     res.status(200).json({ attendees: meeting.attendees });
   } else {
     res.status(404).json({ message: "Meeting not found" });
+  }
+});
+const getAllMeetings = asyncHandler(async (req, res) => {
+  const { tag } = req.query;
+  let meetings;
+  
+  if (tag) {
+    meetings = await Meeting.find({ tag });
+  } else {
+    meetings = await Meeting.find();
+  }
+
+  if (meetings.length > 0) {
+    res.status(200).json(meetings);
+  } else {
+    res.status(404).json({ message: "Meetings not found" });
   }
 });
 
