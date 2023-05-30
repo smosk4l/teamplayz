@@ -16,10 +16,11 @@ router.get("/:id", getSingleMeeting);
 router.get("/public", getPublicMeetings);
 router.get("/:id/attendees", getAttendeesOfMeeting);
 
-router.post("/", setMeeting);
+router.post("/createMeeting", setMeeting);
 router.post("/:id/addUser", addUserToMeeting);
 
 router.put("/:id", updatedMeeting);
+
 router.delete("/:id", deleteMeeting);
 
 module.exports = router;

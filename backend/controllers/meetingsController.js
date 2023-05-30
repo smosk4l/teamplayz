@@ -29,9 +29,10 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
   res.status(200).json(meetings);
 });
 const setMeeting = asyncHandler(async (req, res) => {
-  const { userId, title, description, time, location, attendeesSlots, tag } =
+  const { owner, title, description, time, location, attendeesSlots, tag } =
     req.body;
-  if (!userId || !title || !description || !location || !attendeesSlots || !tag) {
+  
+  if (!owner || !title || !description || !location || !attendeesSlots) {
     res.status(400).json({ message: "Please add all required fields" });
     return;
   }

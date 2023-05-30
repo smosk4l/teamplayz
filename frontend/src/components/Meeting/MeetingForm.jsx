@@ -1,9 +1,8 @@
-import { Link } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { useState } from "react";
 
-import React from "react";
+import useAuthState from "../../state/authState";
 
 function MeetingForm() {
   const [title, setTitle] = useState("");
@@ -13,6 +12,7 @@ function MeetingForm() {
   const [tag, setTag] = useState("");
   const [maxSlots, setMaxSlots] = useState(0);
 
+  const { user } = useAuthState();
   const handleSubmit = async (event) => {
     event.preventDefault();
     if (title.trim() === "") {
@@ -37,11 +37,13 @@ function MeetingForm() {
 
     try {
       await axios.post("http://localhost:8000/api/meetings/createMeeting", {
+        owner: user.id,
         title,
         description,
         time: date,
-        location,
         tag,
+        location,
+        attendees: [user.id],
         attendeesSlots: maxSlots,
       });
       alert("Dodano do bazy");
