@@ -37,9 +37,9 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 });
 
 const setMeeting = asyncHandler(async (req, res) => {
-  const { userId, title, description, time, location, attendeesSlots, tag } =
+  const { owner, title, description, time, location, attendeesSlots, tag } =
     req.body;
-  if (!userId || !title || !description || !location || !attendeesSlots) {
+  if (!owner || !title || !description || !location || !attendeesSlots) {
     res.status(400).json({ message: "Please add all required fields" });
     return;
   }
@@ -54,7 +54,6 @@ const setMeeting = asyncHandler(async (req, res) => {
     private: req.body.private,
     attendeesSlots,
   });
-  console.log(meeting.tag);
   try {
     const savedMeeting = await meeting.save();
     res.status(200).json({ message: "Meeting added", meeting: savedMeeting });

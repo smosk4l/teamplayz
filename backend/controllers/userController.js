@@ -59,6 +59,7 @@ const loginUser = asyncHandler(async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        id: user.id,
       });
   } else {
     res.status(400);

@@ -14,7 +14,7 @@ const {
 router.get("/", getAllMeetings);
 router.get("/public", getPublicMeetings);
 router.get("/:id", getSingleMeeting);
-router.post("/", setMeeting);
+router.post("/createMeeting", setMeeting);
 router.put("/:id", updatedMeeting);
 router.delete("/:id", deleteMeeting);
 router.post("/:id/addUser", addUserToMeeting);
