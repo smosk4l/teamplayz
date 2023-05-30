@@ -20,15 +20,15 @@ const Navbar = () => {
         </li>
         <li>
           {user ? (
-            <Link to={"/signin"}>
-              <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">
-                Sign In
-              </button>
-            </Link>
-          ) : (
             <Link to={"/meetings/create"}>
               <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">
                 Create meeting
+              </button>
+            </Link>
+          ) : (
+            <Link to={"/signin"}>
+              <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">
+                Sign In
               </button>
             </Link>
           )}
