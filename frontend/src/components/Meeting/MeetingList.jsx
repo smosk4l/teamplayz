@@ -26,6 +26,7 @@ function MeetingList() {
       <Navbar />
       {meetings.map((meeting) => (
         <MeetingItem
+          link={"/meetings/" + meeting._id}
           id={meeting._id}
           key={crypto.randomUUID()}
           title={meeting.title}

@@ -16,7 +16,9 @@ function Header() {
           </h2>
           <Button
             url={"/meetings/create"}
-            className={"bg-blue-500 mt-6 px-24 py-3 hidden lx:inline-block"}
+            className={
+              "bg-blue-500 mt-6 px-24 py-3 hidden text-white lx:inline-block"
+            }
           >
             Add metting
           </Button>
