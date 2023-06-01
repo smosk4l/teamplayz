@@ -4,7 +4,8 @@ const Meeting = require("../models/meetingModel");
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
   if (meeting) {
-    const { owner, title, description, time, location, attendees, tag } = meeting;
+    const { owner, title, description, time, location, attendees, tag } =
+      meeting;
     const attendeesSlots = meeting.attendeesSlots;
     res.status(200).json({
       meeting: {
@@ -27,17 +28,13 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
   const meetings = await Meeting.find({ private: false });
   res.status(200).json(meetings);
 });
+
 const setMeeting = asyncHandler(async (req, res) => {
   const { userId, title, description, time, location, attendeesSlots, tag } =
     req.body;
-  if (
-    !userId ||
-    !title ||
-    !description ||
-    !location ||
-    !attendeesSlots ||
-    !tag
-  ) {
+
+  if (!owner || !title || !description || !location || !attendeesSlots) {
+    
     res.status(400).json({ message: "Please add all required fields" });
     return;
   }

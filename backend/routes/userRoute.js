@@ -11,6 +11,6 @@ const {
 
 router.post("/", registerUser);
 router.post("/login", loginUser);
-router.route("/:id").put(updateUser).delete(deleteUser);
 router.get("/getAuth", checkAuth, getAuth);
+router.route("/:id").put(updateUser).delete(deleteUser);
 module.exports = router;

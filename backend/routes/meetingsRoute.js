@@ -14,12 +14,15 @@ const {
 } = require("../controllers/meetingsController");
 
 router.get("/", getAllMeetings);
-router.get("/byOwner/", getMeetingsByOwner);
 router.get("/public", getPublicMeetings);
+router.get("/byOwner/", getMeetingsByOwner);
+router.post("/createMeeting", setMeeting);
+
 router.get("/:id", getSingleMeeting);
-router.get("/:id/attendees", getAttendeesOfMeeting);router.post("/createMeeting", setMeeting);
-router.post("/:id/addUser", addUserToMeeting);
 router.put("/:id", updatedMeeting);
 router.delete("/:id", deleteMeeting);
+
+router.get("/:id/attendees", getAttendeesOfMeeting);
+router.post("/:id/addUser", addUserToMeeting);
 
 module.exports = router;
