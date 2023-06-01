@@ -23,16 +23,21 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
   }
 });
 
-
 const getPublicMeetings = asyncHandler(async (req, res) => {
   const meetings = await Meeting.find({ private: false });
   res.status(200).json(meetings);
 });
 const setMeeting = asyncHandler(async (req, res) => {
-  const { owner, title, description, time, location, attendeesSlots, tag } =
+  const { userId, title, description, time, location, attendeesSlots, tag } =
     req.body;
-  
-  if (!owner || !title || !description || !location || !attendeesSlots) {
+  if (
+    !userId ||
+    !title ||
+    !description ||
+    !location ||
+    !attendeesSlots ||
+    !tag
+  ) {
     res.status(400).json({ message: "Please add all required fields" });
     return;
   }
@@ -127,7 +132,7 @@ const getAttendeesOfMeeting = asyncHandler(async (req, res) => {
 const getAllMeetings = asyncHandler(async (req, res) => {
   const { tag } = req.query;
   let meetings;
-  
+
   if (tag) {
     meetings = await Meeting.find({ tag });
   } else {
@@ -140,6 +145,26 @@ const getAllMeetings = asyncHandler(async (req, res) => {
     res.status(404).json({ message: "Meetings not found" });
   }
 });
+const getMeetingsByOwner = asyncHandler(async (req, res) => {
+  const { userId } = req.body;
+
+  try {
+    const meetings = await Meeting.find({ owner: userId });
+
+    if (meetings.length > 0) {
+      res.status(200).json(meetings);
+    } else {
+      res.status(404).json({ message: "Meetings not found" });
+    }
+  } catch (error) {
+    res.status(500).json({ message: error });
+  }
+});
+
+
+
+
+
 
 module.exports = {
   getAllMeetings,
@@ -150,4 +175,5 @@ module.exports = {
   deleteMeeting,
   addUserToMeeting,
   getAttendeesOfMeeting,
+  getMeetingsByOwner,
 };
