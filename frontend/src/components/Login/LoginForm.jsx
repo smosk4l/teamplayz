@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { useState } from "react";
@@ -8,6 +8,8 @@ function Login() {
   const { setUser } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -29,7 +31,11 @@ function Login() {
         }
       );
       setUser(data);
-      alert("Logowanie działa.");
+      // Todo succes popup model
+
+      alert("Logowanie działa");
+      navigate("/");
+      return;
     } catch (error) {
       console.error(error);
       alert("Logowanie nie działa.");
