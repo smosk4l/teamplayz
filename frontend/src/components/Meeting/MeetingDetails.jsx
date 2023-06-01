@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, Link } from "react-router-dom";
 
 import axios from "axios";
 
@@ -30,7 +30,7 @@ function MeetingDetails() {
   return (
     <>
       <Navbar />
-      {meeting ? (
+      {meeting && (
         <div className="w-full">
           <main className="flex flex-col gap-2 px-8 mx-auto mt-12 font-poppins max-w-[600px]">
             <h1 className="text-2xl font-bold">{meeting.title}</h1>
@@ -52,12 +52,14 @@ function MeetingDetails() {
                   Join to meeting
                 </Button>
                 <div className="flex gap-2 w-full">
-                  <Button className={"border border-green-600 px-6 py-1"}>
-                    <div className="flex gap-2 justify-center items-center text-green-600">
-                      <TbArrowBackUp className="text-xl" />
-                      <span>Return</span>
-                    </div>
-                  </Button>
+                  <Link to={"/meetings"}>
+                    <Button className={"border border-green-600 px-6 py-1"}>
+                      <div className="flex gap-2 justify-center items-center text-green-600">
+                        <TbArrowBackUp className="text-xl" />
+                        <span>Return</span>
+                      </div>
+                    </Button>
+                  </Link>
                   <Button className={"border border-green-600 px-6 py-1"}>
                     <div className="flex gap-2 justify-center items-center text-green-600">
                       <MdOutlineIosShare className="text-xl" />
@@ -69,8 +71,6 @@ function MeetingDetails() {
             </div>
           </main>
         </div>
-      ) : (
-        <h1 className="text-2xl text-center my-5 ">Something went wrong</h1>
       )}
     </>
   );

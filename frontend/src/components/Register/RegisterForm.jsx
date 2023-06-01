@@ -1,5 +1,5 @@
 import Navbar from "../Navbar/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
 import { Navigate } from "react-router-dom";
@@ -12,8 +12,6 @@ function RegistrationForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [errors, setErrors] = useState([]);
-
-  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     setErrors([]);
