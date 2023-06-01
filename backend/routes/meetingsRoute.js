@@ -1,5 +1,6 @@
 const express = require("express");
 const router = express.Router();
+
 const {
   getAllMeetings,
   getPublicMeetings,
@@ -9,10 +10,12 @@ const {
   deleteMeeting,
   addUserToMeeting,
   getAttendeesOfMeeting,
+  getMeetingsByOwner,
 } = require("../controllers/meetingsController");
 
 router.get("/", getAllMeetings);
 router.get("/public", getPublicMeetings);
+router.get("/byOwner/", getMeetingsByOwner);
 router.post("/createMeeting", setMeeting);
 
 router.get("/:id", getSingleMeeting);
