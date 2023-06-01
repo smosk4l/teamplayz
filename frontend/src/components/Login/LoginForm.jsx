@@ -31,8 +31,7 @@ function Login() {
         }
       );
       setUser(data);
-      // Todo succes popup model
-
+      // Todo succes popup
       alert("Logowanie działa");
       navigate("/");
       return;

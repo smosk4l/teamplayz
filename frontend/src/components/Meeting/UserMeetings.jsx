@@ -1,30 +1,29 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
+import useAuthState from "../../state/authState";
 import axios from "axios";
-import MeetingItem from "./MeetingItem";
 import Navbar from "../Navbar/Navbar";
-
-function MeetingList() {
-  const [meetings, setMeetings] = useState([]);
+function UserMeetings() {
+  const { user } = useAuthState();
+  const [meetings, setMeetings] = useState(null);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          "http://localhost:8000/api/meetings/public"
-        );
-        const data = response.data;
-        setMeetings(data);
-      } catch (error) {
-        console.error(error);
-      }
+      const { data } = await axios.get(
+        "http://localhost:8000/api/userMeetings/" + user.id
+      );
+
+      if (!data) return;
+
+      return setMeetings(data.meeting);
     };
-    fetchData();
+
+    fetchData().catch(console.error);
   }, []);
 
   return (
     <>
       <Navbar />
-      {meetings.map((meeting) => (
+      {meetings?.map((meeting) => (
         <MeetingItem
           id={meeting._id}
           key={crypto.randomUUID()}
@@ -40,4 +39,4 @@ function MeetingList() {
   );
 }
 
-export default MeetingList;
+export default UserMeetings;

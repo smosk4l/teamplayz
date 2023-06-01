@@ -26,9 +26,9 @@ const Navbar = () => {
               </button>
             </Link>
           ) : (
-            <Link to={"/signin"}>
+            <Link to={"/login"}>
               <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">
-                Sign In
+                Login
               </button>
             </Link>
           )}
@@ -54,10 +54,10 @@ const Navbar = () => {
           <a href="#">My account</a>
         </li>
         <li className="hover:text-black ">
-          <Link to={"/meetings"}>Meetings</Link>
+          <Link to={"/meetings"}>View Meetings</Link>
         </li>{" "}
         <li className="hover:text-black ">
-          <a href="#">About us</a>
+          <Link to={"/userMeetings"}>My Meetings</Link>
         </li>
         <li className="hover:text-black ">
           <a href="#">FAQ</a>
