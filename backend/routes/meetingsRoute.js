@@ -16,8 +16,8 @@ const {
 
 router.get("/", getAllMeetings);
 router.get("/public", getPublicMeetings);
-router.get("/byOwner/", getMeetingsByOwner);
-router.get("/userMeetings",getUserMeetings);
+router.get("/byOwner/:id", getMeetingsByOwner);
+router.get("/userMeetings/:id", getUserMeetings);
 router.post("/createMeeting", setMeeting);
 
 router.get("/:id", getSingleMeeting);

@@ -1,7 +1,7 @@
 const asyncHandler = require("express-async-handler");
 const Meeting = require("../models/meetingModel");
 ///////////// GET SINGLE MEETING
-///// ROUTE 
+///// ROUTE
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
   if (meeting) {
@@ -149,7 +149,7 @@ const getAllMeetings = asyncHandler(async (req, res) => {
   }
 });
 const getMeetingsByOwner = asyncHandler(async (req, res) => {
-  const { userId } = req.body;
+  const userId = req.params.id;
 
   try {
     const meetings = await Meeting.find({ owner: userId });
@@ -164,7 +164,7 @@ const getMeetingsByOwner = asyncHandler(async (req, res) => {
   }
 });
 const getUserMeetings = asyncHandler(async (req, res) => {
-  const { userId } = req.body;
+  const userId = req.params.id;
 
   try {
     const meetings = await Meeting.find({ attendees: userId });

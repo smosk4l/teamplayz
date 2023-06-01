@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
 import useAuthState from "../../state/authState";
 import axios from "axios";
+
 import Navbar from "../Navbar/Navbar";
+import MeetingItem from "./MeetingItem";
 function UserMeetings() {
   const { user } = useAuthState();
   const [meetings, setMeetings] = useState(null);
@@ -9,17 +11,17 @@ function UserMeetings() {
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/userMeetings/" + user.id
+        "http://localhost:8000/api/meetings/userMeetings/" + user.id
       );
 
       if (!data) return;
 
-      return setMeetings(data.meeting);
+      setMeetings(data);
+      return;
     };
 
     fetchData().catch(console.error);
   }, []);
-
   return (
     <>
       <Navbar />
