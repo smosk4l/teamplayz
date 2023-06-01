@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import axios from "axios";
 
@@ -12,6 +12,7 @@ import { MdOutlineIosShare } from "react-icons/md";
 function MeetingDetails() {
   const { id } = useParams();
   const [meeting, setMeeting] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
@@ -32,7 +33,7 @@ function MeetingDetails() {
       <Navbar />
       {meeting && (
         <div className="w-full">
-          <main className="flex flex-col gap-2 px-8 mx-auto mt-12 font-poppins max-w-[600px]">
+          <main className="flex flex-col gap-2 px-8 py-8 mx-auto mt-12 font-poppins max-w-[600px] shadow-md rounded-lg">
             <h1 className="text-2xl font-bold">{meeting.title}</h1>
             <span className="text-sm text-gray-500 tracking-wide ">
               {meeting.location}
@@ -41,7 +42,7 @@ function MeetingDetails() {
             <p className="mb-4 text-sm w-[40ch] text-gray-700">
               {meeting.description}
             </p>
-            <div className="flex flex-col gap-2 px-8 py-4 border">
+            <div className="flex flex-col gap-2 px-8 py-4 ">
               <div className="flex gap-4">
                 <span>Available slots</span>
                 <span>{meeting.attendeesSlots - meeting.attendees.length}</span>
@@ -52,20 +53,27 @@ function MeetingDetails() {
                   Join to meeting
                 </Button>
                 <div className="flex gap-2 w-full">
-                  <Link to={"/meetings"}>
-                    <Button className={"border border-green-600 px-6 py-1"}>
-                      <div className="flex gap-2 justify-center items-center text-green-600">
-                        <TbArrowBackUp className="text-xl" />
-                        <span>Return</span>
-                      </div>
-                    </Button>
-                  </Link>
-                  <Button className={"border border-green-600 px-6 py-1"}>
+                  <button
+                    onClick={() => navigate("/meetings")}
+                    className={
+                      "border border-green-600 px-6 py-1 w-full rounded-lg"
+                    }
+                  >
+                    <div className="flex gap-2 justify-center items-center text-green-600 ">
+                      <TbArrowBackUp className="text-xl" />
+                      <span>Return</span>
+                    </div>
+                  </button>
+                  <button
+                    className={
+                      "border border-green-600 px-6 py-1 w-full rounded-lg"
+                    }
+                  >
                     <div className="flex gap-2 justify-center items-center text-green-600">
                       <MdOutlineIosShare className="text-xl" />
                       <span>Share</span>
                     </div>
-                  </Button>
+                  </button>
                 </div>
               </div>
             </div>

@@ -5,7 +5,7 @@ function MeetingItem(props) {
   return (
     <>
       <div className="max-w-[1200px]  mt-4 mx-6 xl:mx-auto">
-        <Link to={props.id}>
+        <Link to={props.link}>
           <div className="px-6 py-4 bg-white my-2 rounded-xl relative border shadow-sm">
             <ul>
               <li>
