@@ -2,7 +2,6 @@ import axios from "axios";
 import { AiOutlineDelete, AiOutlineEdit } from "react-icons/ai";
 
 function OrganizingMode(props) {
-  console.log(props.id);
   const deleteMeeting = async () => {
     await axios.delete("http://localhost:8000/api/meetings/" + props.id);
   };
