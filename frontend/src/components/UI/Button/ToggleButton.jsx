@@ -2,8 +2,7 @@ import React, { useEffect, useState } from "react";
 import useAuthState from "../../../state/authState";
 import axios from "axios";
 
-function ToggleButton({ onMeetingsChange }) {
-  const [meetings, setMeetings] = useState(null);
+function ToggleButton({ onMeetingsChange, onOrganizingMode }) {
   const [isChecked, setIsChecked] = useState(false);
   const { user } = useAuthState();
   const [url, setUrl] = useState("userMeetings/" + user.id);
@@ -16,10 +15,9 @@ function ToggleButton({ onMeetingsChange }) {
 
   const fetchData = async () => {
     try {
-      const { data } = await axios.get(
-        "http://localhost:8000/api/meetings/" + url
-      );
+      const res = await axios.get("http://localhost:8000/api/meetings/" + url);
       onMeetingsChange(data);
+      onOrganizingMode();
     } catch (error) {
       console.error(error);
     }

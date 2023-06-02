@@ -29,9 +29,11 @@ function MeetingItem(props) {
                 </div>
               </li>
             </ul>
-            <div className="absolute right-4 top-4 rounded-full bg-gray-100 p-1">
-              <IoHeartOutline className="text-xl stroke-slate-500" />
-            </div>
+            {props.turnLikeIcon && (
+              <div className="absolute right-4 top-4 rounded-full bg-gray-100 p-1">
+                <IoHeartOutline className="text-xl stroke-slate-500" />
+              </div>
+            )}
           </div>
         </Link>
       </div>
