@@ -35,6 +35,7 @@ function MeetingList() {
           description={meeting.description}
           players={meeting.attendees.length}
           maxPlayers={meeting.attendeesSlots}
+          turnLikeIcon={true}
         />
       ))}
     </>

@@ -34,21 +34,29 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 //// CREATE MEETING
 
 const setMeeting = asyncHandler(async (req, res) => {
-  const { userId, title, description, time, location, attendeesSlots, tag } =
+  const { owner, title, description, time, location, attendeesSlots, tag } =
     req.body;
 
-  if (!owner || !title || !description || !location || !attendeesSlots) {
+  if (
+    !owner ||
+    !title ||
+    !description ||
+    !time ||
+    !location ||
+    !attendeesSlots ||
+    !tag
+  ) {
     res.status(400).json({ message: "Please add all required fields" });
     return;
   }
   const meeting = new Meeting({
-    owner: userId,
+    owner,
     title,
     tag,
     description,
     time,
     location,
-    attendees: [userId],
+    attendees: [owner],
     private: req.body.private,
     attendeesSlots,
   });
@@ -92,7 +100,7 @@ const deleteMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(id);
 
   if (meeting) {
-    await meeting.remove();
+    await Meeting.deleteOne(meeting);
     res.status(200).json({ message: "Meeting removed" });
   } else {
     res.status(404).json({ message: "Meeting not found" });
