@@ -15,7 +15,9 @@ function ToggleButton({ onMeetingsChange, onOrganizingMode }) {
 
   const fetchData = async () => {
     try {
-      const res = await axios.get("http://localhost:8000/api/meetings/" + url);
+      const { data } = await axios.get(
+        "http://localhost:8000/api/meetings/" + url
+      );
       onMeetingsChange(data);
       onOrganizingMode();
     } catch (error) {

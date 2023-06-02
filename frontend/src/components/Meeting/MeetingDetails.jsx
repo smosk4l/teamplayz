@@ -1,15 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import useAuthState from "../../state/authState";
 
 import axios from "axios";
 
 import Navbar from "../Navbar/Navbar";
-import Button from "../UI/Button/Button";
 
 import { TbArrowBackUp } from "react-icons/tb";
 import { MdOutlineIosShare } from "react-icons/md";
 
 function MeetingDetails() {
+  const { user } = useAuthState();
+
   const { id } = useParams();
   const [meeting, setMeeting] = useState(null);
   const navigate = useNavigate();
@@ -27,6 +29,19 @@ function MeetingDetails() {
 
     fetchData().catch(console.error);
   }, []);
+
+  const addUserToMeeting = async () => {
+    if (!user) navigate("/login");
+
+    const res = await axios.post(
+      `http://localhost:8000/api/meetings/${id}/addUser`,
+      {
+        userId: user.id,
+      }
+    );
+
+    console.log(res);
+  };
 
   return (
     <>
@@ -49,9 +64,12 @@ function MeetingDetails() {
               </div>
               <span>{meeting.tag}</span>
               <div className="flex flex-col gap-4">
-                <Button className={"w-full bg-green-600 text-white  py-2"}>
+                <button
+                  onClick={addUserToMeeting}
+                  className={"w-full bg-green-600 text-white  py-2"}
+                >
                   Join to meeting
-                </Button>
+                </button>
                 <div className="flex gap-2 w-full">
                   <button
                     onClick={() => navigate("/meetings")}
