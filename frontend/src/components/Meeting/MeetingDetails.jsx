@@ -1,19 +1,17 @@
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import useAuthState from "../../state/authState";
-
 import axios from "axios";
-
 import Navbar from "../Navbar/Navbar";
-
 import { TbArrowBackUp } from "react-icons/tb";
 import { MdOutlineIosShare } from "react-icons/md";
+import PopupModal from "../Modal/PopupModal";
 
 function MeetingDetails() {
   const { user } = useAuthState();
-
   const { id } = useParams();
   const [meeting, setMeeting] = useState(null);
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -24,7 +22,7 @@ function MeetingDetails() {
 
       if (!data) return;
 
-      return setMeeting(data.meeting);
+      setMeeting(data.meeting);
     };
 
     fetchData().catch(console.error);
@@ -40,8 +38,10 @@ function MeetingDetails() {
       }
     );
 
-    console.log(res);
+    setShowModal(true);
   };
+
+  const handleCloseModal = () => setShowModal(false);
 
   return (
     <>
@@ -97,6 +97,13 @@ function MeetingDetails() {
             </div>
           </main>
         </div>
+      )}
+
+      {showModal && (
+        <PopupModal
+          message="Congratulations, you have joined the meeting!"
+          onClose={handleCloseModal}
+        />
       )}
     </>
   );
