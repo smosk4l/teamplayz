@@ -3,6 +3,7 @@ import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { useState } from "react";
 import useAuthStore from "../../state/authState";
+import LoadingCircle from "../UI/LoadingCircle/LoadingCircle";
 
 function Login() {
   const { setUser } = useAuthStore();
@@ -43,6 +44,8 @@ function Login() {
   return (
     <>
       <Navbar />
+
+      <LoadingCircle />
       <form onSubmit={handleSubmit} className="flex flex-col items-center my-6">
         <div className="max-w-[500px] w-full">
           <h1 className="text-black-link text-2xl text-center font-bold mb-2">
