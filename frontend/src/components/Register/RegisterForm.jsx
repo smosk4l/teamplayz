@@ -1,8 +1,8 @@
 import Navbar from "../Navbar/Navbar";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
-import { Navigate } from "react-router-dom";
+import LoadingCircle from "../UI/LoadingCircle/LoadingCircle";
 
 function RegistrationForm() {
   const [firstName, setFirstName] = useState("");
@@ -12,6 +12,9 @@ function RegistrationForm() {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [errors, setErrors] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     setErrors([]);
@@ -27,6 +30,8 @@ function RegistrationForm() {
       return;
     }
 
+    setIsLoading(true); // Ustaw flagę na true
+
     try {
       await axios.post("http://localhost:8000/api/users/", {
         firstName,
@@ -37,16 +42,18 @@ function RegistrationForm() {
         isTermsAccepted,
       });
 
-      alert("Rejestracja udana. Możesz teraz się zalogować.");
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 2000);
+
       setFirstName("");
       setLastName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
       setIsTermsAccepted(false);
-      navigate("/login");
 
-      return <Navigate to={"/home"} />;
+      return navigate("/login");
     } catch (error) {
       console.error(error);
       // Todo popup model register failed
@@ -62,6 +69,8 @@ function RegistrationForm() {
   return (
     <>
       <Navbar />
+      {isLoading && <LoadingCircle />}
+
       {errors && errors.length > 0 && (
         <div className="bg-red-500 w-full min-h-[4rem] relative top-0">
           <ul>

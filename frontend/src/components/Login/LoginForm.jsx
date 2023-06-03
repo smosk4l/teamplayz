@@ -4,11 +4,15 @@ import axios from "axios";
 import { useState } from "react";
 import useAuthStore from "../../state/authState";
 import LoadingCircle from "../UI/LoadingCircle/LoadingCircle";
+import PopupModal from "../Modal/PopupModal";
+import ToggleButton from "../UI/Button/ToggleButton";
 
 function Login() {
   const { setUser } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const navigate = useNavigate();
 
@@ -23,6 +27,8 @@ function Login() {
       alert("Proszę wprowadzić hasło.");
       return;
     }
+
+    setIsLoading(true);
     try {
       const { data } = await axios.post(
         "http://localhost:8000/api/users/login",
@@ -32,20 +38,24 @@ function Login() {
         }
       );
       setUser(data);
-      // Todo succes popup
-      alert("Logowanie działa");
-      navigate("/");
-      return;
+
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 1000);
+
+      setShowModal(true);
     } catch (error) {
       console.error(error);
       alert("Logowanie nie działa.");
     }
   };
+
+  const handleCloseModal = () => setShowModal(false);
+
   return (
     <>
       <Navbar />
-
-      <LoadingCircle />
+      {isLoading && <LoadingCircle />}
       <form onSubmit={handleSubmit} className="flex flex-col items-center my-6">
         <div className="max-w-[500px] w-full">
           <h1 className="text-black-link text-2xl text-center font-bold mb-2">
@@ -101,6 +111,12 @@ function Login() {
           </div>
         </div>
       </form>
+      {showModal && (
+        <PopupModal
+          message="Congratulations, you have created an account!"
+          onClose={handleCloseModal}
+        />
+      )}
     </>
   );
 }

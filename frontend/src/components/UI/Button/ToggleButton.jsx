@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import useAuthState from "../../../state/authState";
 import axios from "axios";
 
-function ToggleButton({ onMeetingsChange, onOrganizingMode }) {
+function ToggleButton({ onMeetingsChange }) {
+  const [meetings, setMeetings] = useState(null);
   const [isChecked, setIsChecked] = useState(false);
   const { user } = useAuthState();
   const [url, setUrl] = useState("userMeetings/" + user.id);
@@ -19,7 +20,6 @@ function ToggleButton({ onMeetingsChange, onOrganizingMode }) {
         "http://localhost:8000/api/meetings/" + url
       );
       onMeetingsChange(data);
-      onOrganizingMode();
     } catch (error) {
       console.error(error);
     }
@@ -30,20 +30,20 @@ function ToggleButton({ onMeetingsChange, onOrganizingMode }) {
   }, [url]);
 
   return (
-    <div className="flex justify-center my-8">
+    <div className="flex justify-center my-8 z-50">
       <label
         htmlFor="Toggle Button"
-        className="inline-flex items-center p-2 rounded-md cursor-pointer dark:text-gray-800 ease-linear duration-300"
+        className="inline-flex items-center p-2 rounded-md cursor-pointer text-gray-800 ease-linear duration-300"
         onChange={() => {
           setIsChecked(!isChecked);
           changeUrlHandler();
         }}
       >
         <input id="Toggle Button" type="checkbox" className="hidden peer" />
-        <span className="px-4 py-2 rounded-l-md dark:bg-violet-400 peer-checked:dark:bg-gray-300 transition-colors duration-300 ease-in">
+        <span className="px-4 py-2 rounded-l-md bg-violet-400 peer-checked:bg-gray-300 transition-colors duration-300 ease-in">
           Attending
         </span>
-        <span className="px-4 py-2 rounded-r-md dark:bg-gray-300 peer-checked:dark:bg-violet-400 transition-colors duration-300 ease-in">
+        <span className="px-4 py-2 rounded-r-md bg-gray-300 peer-checked:bg-violet-400 transition-colors duration-300 ease-in">
           Organizing
         </span>
       </label>
