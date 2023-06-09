@@ -1,11 +1,15 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "../Navbar/Navbar";
 import axios from "axios";
 import { useState } from "react";
+import useAuthStore from "../../state/authState";
 
 function Login() {
+  const { setUser } = useAuthStore();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+
+  const navigate = useNavigate();
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -19,11 +23,18 @@ function Login() {
       return;
     }
     try {
-      await axios.post("http://localhost:8000/api/users/login", {
-        email,
-        password,
-      });
-      alert("Logowanie działa.");
+      const { data } = await axios.post(
+        "http://localhost:8000/api/users/login",
+        {
+          email,
+          password,
+        }
+      );
+      setUser(data);
+      // Todo succes popup
+      alert("Logowanie działa");
+      navigate("/");
+      return;
     } catch (error) {
       console.error(error);
       alert("Logowanie nie działa.");

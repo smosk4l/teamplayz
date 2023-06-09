@@ -2,8 +2,11 @@ import { Link } from "react-router-dom";
 import { useState } from "react";
 import logo from "../../assets/teamplayz.jpg";
 import { HiOutlineMenuAlt4, HiOutlineX } from "react-icons/hi";
+import useAuthStore from "../../state/authState";
 
 const Navbar = () => {
+  const { user } = useAuthStore();
+
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
@@ -16,11 +19,19 @@ const Navbar = () => {
           </Link>
         </li>
         <li>
-          <Link to={"/signin"}>
-            <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">
-              Sign In
-            </button>
-          </Link>
+          {user ? (
+            <Link to={"/meetings/create"}>
+              <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">
+                Create meeting
+              </button>
+            </Link>
+          ) : (
+            <Link to={"/login"}>
+              <button className="bg-black-button font-bold text-white px-5 py-2 rounded-lg">
+                Login
+              </button>
+            </Link>
+          )}
         </li>
         <li>
           <button className="text-2xl" onClick={toggleMenu}>
@@ -43,10 +54,10 @@ const Navbar = () => {
           <a href="#">My account</a>
         </li>
         <li className="hover:text-black ">
-          <a href="#">Meetings</a>
+          <Link to={"/meetings"}>View Meetings</Link>
         </li>{" "}
         <li className="hover:text-black ">
-          <a href="#">About us</a>
+          <Link to={"/userMeetings"}>My Meetings</Link>
         </li>
         <li className="hover:text-black ">
           <a href="#">FAQ</a>

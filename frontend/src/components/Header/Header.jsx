@@ -1,6 +1,7 @@
 import Navbar from "../Navbar/Navbar";
 import headerIlustration from "../../assets/header_ilustration.png";
 import Button from "../UI/Button/Button";
+
 function Header() {
   return (
     <header>
@@ -14,8 +15,10 @@ function Header() {
             Make meeting planning a breeze with TeamPlayz
           </h2>
           <Button
-            url={"/meeting/"}
-            className={"bg-blue-500 mt-6 px-24 py-3 hidden lx:inline-block"}
+            url={"/meetings/create"}
+            className={
+              "bg-blue-500 mt-6 px-24 py-3 hidden text-white lx:inline-block"
+            }
           >
             Add metting
           </Button>
@@ -26,7 +29,7 @@ function Header() {
           className="max-w-[300px] sm:max-w-[400px] md:max-w-[600px] lx:m-0"
         />
         <Button
-          url={"/meeting/"}
+          url={"/meetings/create"}
           className={"bg-blue-500 px-24 py-3 lx:hidden"}
         >
           Add metting

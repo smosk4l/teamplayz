@@ -1,8 +1,7 @@
 const bcrypt = require("bcryptjs");
 const asyncHandler = require("express-async-handler");
 const User = require("../models/userModel");
-const mongoose = require("mongoose");
-
+const generateToken = require("../config/getToken");
 //@desc Register new user
 //@route POST /api/users
 //access Public
@@ -30,7 +29,7 @@ const registerUser = asyncHandler(async (req, res) => {
   });
   if (user) {
     res.status(201).json({
-      _id: user.id,
+      _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName,
       email: user.email,
@@ -48,25 +47,26 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
   const user = await User.findOne({ email });
   if (user && (await bcrypt.compare(password, user.password))) {
-    res.json({
-      _id: user.id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-    });
+    // Generowanie tokena JWT
+    const token = generateToken(user._id);
+
+    res
+      .cookie("access_token", token, {
+        httpOnly: true,
+      })
+      .status(200)
+      .json({
+        firstName: user.firstName,
+        lastName: user.lastName,
+        email: user.email,
+        id: user.id,
+      });
   } else {
     res.status(400);
     throw new Error("Invalid credentials");
   }
 });
 
-//@desc Get user data
-//@route GET /api/users/me
-//access Public
-const getMe = asyncHandler(async (req, res) => {
-  res.json({ message: "User data display" });
-});
-//@desc DELATE ACCOUNT 
 //@desc Delete user
 //@route DELETE /api/users/:id
 //access Private
@@ -111,12 +111,14 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
-
+const getAuth = asyncHandler(async (req, res) => {
+  res.json("You got the private route");
+});
 
 module.exports = {
   registerUser,
   loginUser,
-  getMe,
   deleteUser,
-  updateUser
+  updateUser,
+  getAuth,
 };

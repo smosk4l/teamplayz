@@ -1,36 +1,61 @@
 const mongoose = require("mongoose");
+
 const meetingSchema = mongoose.Schema(
   {
-    user: {
+    owner: {
       type: mongoose.Schema.Types.ObjectId,
-      required: [true],
+      // required: true,
       ref: "User",
     },
     title: {
       type: String,
-      required: [true, "Please add a title"],
+      required: true,
     },
     description: {
       type: String,
-      required: [true, "Please add a description"],
+      required: true,
+      maxlength: 300,
     },
     time: {
       type: Date,
+      required: true,
       min: Date.now(),
       max: "2025-01-01",
-      required: [true, "Please add a valid date"],
+    },
+    tag: {
+      type: String,
+      required: [true, "Please add a tag for meeting"],
     },
     location: {
       type: String,
-      required: [true, "Please add location url"],
+      required: true,
     },
     private: {
-      type : Boolean,
-      default : false
-    }
+      type: Boolean,
+      default: false,
+    },
+    attendees: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+      },
+    ],
+    attendeesSlots: {
+      type: Number,
+      // required: true,
+      validate: {
+        validator: function (value) {
+          return value <= 30;
+        },
+        message: "Number of attendee slots cannot exceed 30.",
+      },
+    },
   },
   {
     timestamps: true,
   }
 );
-module.exports = mongoose.model("Meeting", meetingSchema);
+
+const Meeting = mongoose.model("Meeting", meetingSchema);
+
+module.exports = Meeting;

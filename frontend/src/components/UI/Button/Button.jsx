@@ -5,7 +5,7 @@ const Button = (props) => {
     <Link to={props.url || "#"}>
       <button
         type={props.type || "button"}
-        className={`text-xl font-bold text-white
+        className={`font-bold 
       rounded-lg ${props.className}`}
         onClick={props.onClick}
       >

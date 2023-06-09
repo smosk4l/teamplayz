@@ -1,7 +1,8 @@
 import Navbar from "../Navbar/Navbar";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { useState } from "react";
 import axios from "axios";
+import { Navigate } from "react-router-dom";
 
 function RegistrationForm() {
   const [firstName, setFirstName] = useState("");
@@ -12,8 +13,6 @@ function RegistrationForm() {
   const [isTermsAccepted, setIsTermsAccepted] = useState(false);
   const [errors, setErrors] = useState([]);
 
-  const navigate = useNavigate();
-  console.log(errors);
   const handleSubmit = async (event) => {
     setErrors([]);
     event.preventDefault();
@@ -39,17 +38,19 @@ function RegistrationForm() {
       });
 
       alert("Rejestracja udana. Możesz teraz się zalogować.");
-
       setFirstName("");
       setLastName("");
       setEmail("");
       setPassword("");
       setConfirmPassword("");
       setIsTermsAccepted(false);
-
       navigate("/login");
+
+      return <Navigate to={"/home"} />;
     } catch (error) {
       console.error(error);
+      // Todo popup model register failed
+
       alert("Rejestracja nie powiodła się. Spróbuj ponownie.");
     }
   };
