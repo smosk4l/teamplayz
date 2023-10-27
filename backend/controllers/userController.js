@@ -14,9 +14,8 @@ const registerUser = asyncHandler(async (req, res) => {
   //check if user exist
   const userExists = await User.findOne({ email })
   if (userExists) {
-    res.status(400)
-    throw new Error('User already exists')
-  }
+    res.status(409).send({error:'user already exist'})
+  } 
   //hash password
   const salt = await bcrypt.genSalt(10)
   const hashedPassword = await bcrypt.hash(password, salt)
