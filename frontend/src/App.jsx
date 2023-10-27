@@ -1,16 +1,16 @@
-import useAuthStore from "./state/authState";
+import useAuthStore from './state/authState'
 
-import Header from "./components/Header/Header";
-import RegisterForm from "./components/Register/RegisterForm";
-import LoginForm from "./components/Login/LoginForm";
-import MeetingList from "./components/Meeting/MeetingList";
-import MeetingForm from "./components/Meeting/MeetingForm";
-import MeetingDetails from "./components/Meeting/MeetingDetails";
-import { HashRouter, Routes, Route, Navigate } from "react-router-dom";
-import UserMeetings from "./components/Meeting/UserMeetings";
+import Header from './components/Header/Header'
+import RegisterForm from './components/Register/RegisterForm'
+import LoginForm from './components/Login/LoginForm'
+import MeetingList from './components/Meeting/MeetingList'
+import MeetingForm from './components/Meeting/MeetingForm'
+import MeetingDetails from './components/Meeting/MeetingDetails'
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
+import UserMeetings from './components/Meeting/UserMeetings'
 
 function App() {
-  const { user } = useAuthStore();
+  const { user } = useAuthStore()
   return (
     <HashRouter>
       <Routes>
@@ -31,7 +31,7 @@ function App() {
         />
       </Routes>
     </HashRouter>
-  );
+  )
 }
 
-export default App;
+export default App

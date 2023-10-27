@@ -1,47 +1,47 @@
-import React, { useState, useEffect } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-import useAuthState from "../../state/authState";
-import axios from "axios";
-import Navbar from "../Navbar/Navbar";
-import { TbArrowBackUp } from "react-icons/tb";
-import { MdOutlineIosShare } from "react-icons/md";
-import PopupModal from "../Modal/PopupModal";
+import { useState, useEffect } from 'react'
+import { useParams, useNavigate } from 'react-router-dom'
+import useAuthState from '../../state/authState'
+import axios from 'axios'
+import Navbar from '../Navbar/Navbar'
+import { TbArrowBackUp } from 'react-icons/tb'
+import { MdOutlineIosShare } from 'react-icons/md'
+import PopupModal from '../Modal/PopupModal'
 
 function MeetingDetails() {
-  const { user } = useAuthState();
-  const { id } = useParams();
-  const [meeting, setMeeting] = useState(null);
-  const [showModal, setShowModal] = useState(false);
-  const navigate = useNavigate();
+  const { user } = useAuthState()
+  const { id } = useParams()
+  const [meeting, setMeeting] = useState(null)
+  const [showModal, setShowModal] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/meetings/" + id
-      );
+        'http://localhost:8000/api/meetings/' + id
+      )
 
-      if (!data) return;
+      if (!data) return
 
-      setMeeting(data.meeting);
-    };
+      setMeeting(data.meeting)
+    }
 
-    fetchData().catch(console.error);
-  }, []);
+    fetchData().catch(console.error)
+  }, [])
 
   const addUserToMeeting = async () => {
-    if (!user) navigate("/login");
+    if (!user) navigate('/login')
 
     const res = await axios.post(
       `http://localhost:8000/api/meetings/${id}/addUser`,
       {
         userId: user.id,
       }
-    );
+    )
 
-    setShowModal(true);
-  };
+    setShowModal(true)
+  }
 
-  const handleCloseModal = () => setShowModal(false);
+  const handleCloseModal = () => setShowModal(false)
 
   return (
     <>
@@ -66,15 +66,15 @@ function MeetingDetails() {
               <div className="flex flex-col gap-4">
                 <button
                   onClick={addUserToMeeting}
-                  className={"w-full bg-green-600 text-white  py-2"}
+                  className={'w-full bg-green-600 text-white  py-2'}
                 >
                   Join to meeting
                 </button>
                 <div className="flex gap-2 w-full">
                   <button
-                    onClick={() => navigate("/meetings")}
+                    onClick={() => navigate('/meetings')}
                     className={
-                      "border border-green-600 px-6 py-1 w-full rounded-lg"
+                      'border border-green-600 px-6 py-1 w-full rounded-lg'
                     }
                   >
                     <div className="flex gap-2 justify-center items-center text-green-600 ">
@@ -84,7 +84,7 @@ function MeetingDetails() {
                   </button>
                   <button
                     className={
-                      "border border-green-600 px-6 py-1 w-full rounded-lg"
+                      'border border-green-600 px-6 py-1 w-full rounded-lg'
                     }
                   >
                     <div className="flex gap-2 justify-center items-center text-green-600">
@@ -106,7 +106,7 @@ function MeetingDetails() {
         />
       )}
     </>
-  );
+  )
 }
 
-export default MeetingDetails;
+export default MeetingDetails

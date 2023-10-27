@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 export default {
-  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
+  content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
   theme: {
     extend: {
       fontFamily: {
@@ -8,16 +8,16 @@ export default {
         lato: "Poppins', sans-serif;",
       },
       backgroundColor: {
-        "black-button": "#303030",
+        'black-button': '#303030',
       },
       textColor: {
-        link: "#787F84",
-        "black-link": "#303030",
+        link: '#787F84',
+        'black-link': '#303030',
       },
       screens: {
-        lx: "910px",
+        lx: '910px',
       },
     },
   },
   plugins: [],
-};
+}

@@ -1,48 +1,58 @@
-import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../Navbar/Navbar";
-import axios from "axios";
-import { useState } from "react";
-import useAuthStore from "../../state/authState";
+import { Link } from 'react-router-dom'
+import Navbar from '../Navbar/Navbar'
+import axios from 'axios'
+import { useState } from 'react'
+import useAuthStore from '../../state/authState'
+import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
+import PopupModal from '../Modal/PopupModal'
 
 function Login() {
-  const { setUser } = useAuthStore();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-
-  const navigate = useNavigate();
+  const { setUser } = useAuthStore()
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+  const [isLoading, setIsLoading] = useState(false)
+  const [showModal, setShowModal] = useState(false)
 
   const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (email.trim() === "") {
-      alert("Proszę wprowadzić adres e-mail.");
-      return;
+    event.preventDefault()
+    if (email.trim() === '') {
+      alert('Proszę wprowadzić adres e-mail.')
+      return
     }
 
-    if (password.trim() === "") {
-      alert("Proszę wprowadzić hasło.");
-      return;
+    if (password.trim() === '') {
+      alert('Proszę wprowadzić hasło.')
+      return
     }
+
+    setIsLoading(true)
     try {
       const { data } = await axios.post(
-        "http://localhost:8000/api/users/login",
+        'http://localhost:8000/api/users/login',
         {
           email,
           password,
         }
-      );
-      setUser(data);
-      // Todo succes popup
-      alert("Logowanie działa");
-      navigate("/");
-      return;
+      )
+      setUser(data)
+
+      setTimeout(() => {
+        setIsLoading(false)
+      }, 1000)
+
+      setShowModal(true)
     } catch (error) {
-      console.error(error);
-      alert("Logowanie nie działa.");
+      console.error(error)
+      alert('Logowanie nie działa.')
     }
-  };
+  }
+
+  const handleCloseModal = () => setShowModal(false)
+
   return (
     <>
       <Navbar />
+      {isLoading && <LoadingCircle />}
       <form onSubmit={handleSubmit} className="flex flex-col items-center my-6">
         <div className="max-w-[500px] w-full">
           <h1 className="text-black-link text-2xl text-center font-bold mb-2">
@@ -78,7 +88,7 @@ function Login() {
             </div>
 
             <label className="text-xs ">
-              I have forgotten my password{" "}
+              I have forgotten my password{' '}
               <span className="text-blue-500 underline">Reset</span>
             </label>
 
@@ -86,20 +96,26 @@ function Login() {
               type="submit"
               value="Login"
               className={
-                "text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3"
+                'text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3'
               }
             />
             <p className="text-center mt-4">
-              Don't have an account?{" "}
-              <Link to={"/signin"} className="text-blue-500 underline">
+              Don't have an account?{' '}
+              <Link to={'/signin'} className="text-blue-500 underline">
                 Create an account
               </Link>
             </p>
           </div>
         </div>
       </form>
+      {showModal && (
+        <PopupModal
+          message="Congratulations, you have created an account!"
+          onClose={handleCloseModal}
+        />
+      )}
     </>
-  );
+  )
 }
 
-export default Login;
+export default Login

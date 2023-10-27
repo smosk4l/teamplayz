@@ -1,38 +1,38 @@
-import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import useAuthState from "../../state/authState";
-import axios from "axios";
+import { useEffect, useState } from 'react'
+import { Link } from 'react-router-dom'
+import useAuthState from '../../state/authState'
+import axios from 'axios'
 
-import Navbar from "../Navbar/Navbar";
-import MeetingItem from "./MeetingItem";
-import ToggleButton from "../UI/Button/ToggleButton";
-import OrganizingMode from "../UI/Mode/OrganizingMode";
+import Navbar from '../Navbar/Navbar'
+import MeetingItem from './MeetingItem'
+import ToggleButton from '../UI/Button/ToggleButton'
+import OrganizingMode from '../UI/Mode/OrganizingMode'
 function UserMeetings() {
-  const { user } = useAuthState();
-  const [meetings, setMeetings] = useState(null);
-  const [isOrganizingMode, setIsOrganizingMode] = useState(false);
+  const { user } = useAuthState()
+  const [meetings, setMeetings] = useState(null)
+  const [isOrganizingMode, setIsOrganizingMode] = useState(false)
 
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get(
-        "http://localhost:8000/api/meetings/userMeetings/" + user.id
-      );
+        'http://localhost:8000/api/meetings/userMeetings/' + user.id
+      )
 
-      if (!data) return;
+      if (!data) return
 
-      return setMeetings(data);
-    };
+      return setMeetings(data)
+    }
 
-    fetchData().catch(console.error);
-  }, []);
+    fetchData().catch(console.error)
+  }, [])
 
   const handleMeetingsChange = (newMeetings) => {
-    setMeetings(newMeetings);
-  };
+    setMeetings(newMeetings)
+  }
 
   const handleOrganizingMode = () => {
-    setIsOrganizingMode(!isOrganizingMode);
-  };
+    setIsOrganizingMode(!isOrganizingMode)
+  }
 
   return (
     <>
@@ -49,7 +49,7 @@ function UserMeetings() {
           </h1>
 
           <Link
-            to={"/meetings"}
+            to={'/meetings'}
             className="bg-blue-500 mt-6 px-5 py-2  text-white rounded-lg"
           >
             View meetings
@@ -59,7 +59,7 @@ function UserMeetings() {
       {meetings?.map((meeting) => (
         <div className="relative">
           <MeetingItem
-            link={"/meetings/" + meeting._id}
+            link={'/meetings/' + meeting._id}
             id={meeting._id}
             key={crypto.randomUUID()}
             title={meeting.title}
@@ -74,7 +74,7 @@ function UserMeetings() {
         </div>
       ))}
     </>
-  );
+  )
 }
 
-export default UserMeetings;
+export default UserMeetings

@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { IoLocationOutline, IoHeartOutline } from "react-icons/io5";
+import { Link } from 'react-router-dom'
+import { IoLocationOutline, IoHeartOutline } from 'react-icons/io5'
 
 function MeetingItem(props) {
   return (
@@ -38,7 +38,7 @@ function MeetingItem(props) {
         </Link>
       </div>
     </>
-  );
+  )
 }
 
-export default MeetingItem;
+export default MeetingItem

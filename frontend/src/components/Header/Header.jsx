@@ -1,6 +1,6 @@
-import Navbar from "../Navbar/Navbar";
-import headerIlustration from "../../assets/header_ilustration.png";
-import Button from "../UI/Button/Button";
+import Navbar from '../Navbar/Navbar'
+import headerIllustration from '../../assets/header_ilustration.png'
+import Button from '../UI/Button/Button'
 
 function Header() {
   return (
@@ -15,28 +15,28 @@ function Header() {
             Make meeting planning a breeze with TeamPlayz
           </h2>
           <Button
-            url={"/meetings/create"}
+            url={'/meetings/create'}
             className={
-              "bg-blue-500 mt-6 px-24 py-3 hidden text-white lx:inline-block"
+              'bg-blue-500 mt-6 px-24 py-3 hidden text-white lx:inline-block'
             }
           >
-            Add metting
+            Add meeting
           </Button>
         </div>
         <img
-          src={headerIlustration}
+          src={headerIllustration}
           alt="Header Ilustration, A group of friends waving"
           className="max-w-[300px] sm:max-w-[400px] md:max-w-[600px] lx:m-0"
         />
         <Button
-          url={"/meetings/create"}
-          className={"bg-blue-500 px-24 py-3 lx:hidden"}
+          url={'/meetings/create'}
+          className={'bg-blue-500 px-24 py-3 lx:hidden'}
         >
-          Add metting
+          Add meeting
         </Button>
       </main>
     </header>
-  );
+  )
 }
 
-export default Header;
+export default Header
