@@ -2,16 +2,16 @@ const express = require('express')
 const router = express.Router()
 
 const {
-    getAllMeetings,
-    getPublicMeetings,
-    getSingleMeeting,
-    setMeeting,
-    updatedMeeting,
-    deleteMeeting,
-    addUserToMeeting,
-    getAttendeesOfMeeting,
-    getMeetingsByOwner,
-    getUserMeetings,
+  getAllMeetings,
+  getPublicMeetings,
+  getSingleMeeting,
+  setMeeting,
+  updatedMeeting,
+  deleteMeeting,
+  addUserToMeeting,
+  getAttendeesOfMeeting,
+  getMeetingsByOwner,
+  getUserMeetings,
 } = require('../controllers/meetingsController')
 
 router.get('/', getAllMeetings)

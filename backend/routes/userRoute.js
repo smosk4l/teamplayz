@@ -2,11 +2,11 @@ const express = require('express')
 const router = express.Router()
 const { checkAuth } = require('../middleware/checkAuth')
 const {
-    registerUser,
-    loginUser,
-    deleteUser,
-    updateUser,
-    getAuth,
+  registerUser,
+  loginUser,
+  deleteUser,
+  updateUser,
+  getAuth,
 } = require('../controllers/userController.js')
 
 router.post('/', registerUser)
