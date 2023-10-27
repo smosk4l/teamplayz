@@ -1,124 +1,129 @@
-import { Link, useNavigate } from "react-router-dom";
-import Navbar from "../Navbar/Navbar";
-import axios from "axios";
-import { useState } from "react";
-import useAuthStore from "../../state/authState";
-import LoadingCircle from "../UI/LoadingCircle/LoadingCircle";
-import PopupModal from "../Modal/PopupModal";
-import ToggleButton from "../UI/Button/ToggleButton";
+import { Link } from 'react-router-dom'
+import Navbar from '../Navbar/Navbar'
+import axios from 'axios'
+import { useState } from 'react'
+import useAuthStore from '../../state/authState'
+import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
+import PopupModal from '../Modal/PopupModal'
 
 function Login() {
-  const { setUser } = useAuthStore();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
+    const { setUser } = useAuthStore()
+    const [email, setEmail] = useState('')
+    const [password, setPassword] = useState('')
+    const [isLoading, setIsLoading] = useState(false)
+    const [showModal, setShowModal] = useState(false)
 
-  const navigate = useNavigate();
-
-  const handleSubmit = async (event) => {
-    event.preventDefault();
-    if (email.trim() === "") {
-      alert("Proszę wprowadzić adres e-mail.");
-      return;
-    }
-
-    if (password.trim() === "") {
-      alert("Proszę wprowadzić hasło.");
-      return;
-    }
-
-    setIsLoading(true);
-    try {
-      const { data } = await axios.post(
-        "http://localhost:8000/api/users/login",
-        {
-          email,
-          password,
+    const handleSubmit = async (event) => {
+        event.preventDefault()
+        if (email.trim() === '') {
+            alert('Proszę wprowadzić adres e-mail.')
+            return
         }
-      );
-      setUser(data);
 
-      setTimeout(() => {
-        setIsLoading(false);
-      }, 1000);
+        if (password.trim() === '') {
+            alert('Proszę wprowadzić hasło.')
+            return
+        }
 
-      setShowModal(true);
-    } catch (error) {
-      console.error(error);
-      alert("Logowanie nie działa.");
+        setIsLoading(true)
+        try {
+            const { data } = await axios.post(
+                'http://localhost:8000/api/users/login',
+                {
+                    email,
+                    password,
+                }
+            )
+            setUser(data)
+
+            setTimeout(() => {
+                setIsLoading(false)
+            }, 1000)
+
+            setShowModal(true)
+        } catch (error) {
+            console.error(error)
+            alert('Logowanie nie działa.')
+        }
     }
-  };
 
-  const handleCloseModal = () => setShowModal(false);
+    const handleCloseModal = () => setShowModal(false)
 
-  return (
-    <>
-      <Navbar />
-      {isLoading && <LoadingCircle />}
-      <form onSubmit={handleSubmit} className="flex flex-col items-center my-6">
-        <div className="max-w-[500px] w-full">
-          <h1 className="text-black-link text-2xl text-center font-bold mb-2">
-            Log in to your account
-          </h1>
-          <div className="w-full px-12">
-            <div className="flex flex-col mt-4 gap-2">
-              <label htmlFor="email" className="text-sm ">
-                Email Address
-              </label>
+    return (
+        <>
+            <Navbar />
+            {isLoading && <LoadingCircle />}
+            <form
+                onSubmit={handleSubmit}
+                className="flex flex-col items-center my-6"
+            >
+                <div className="max-w-[500px] w-full">
+                    <h1 className="text-black-link text-2xl text-center font-bold mb-2">
+                        Log in to your account
+                    </h1>
+                    <div className="w-full px-12">
+                        <div className="flex flex-col mt-4 gap-2">
+                            <label htmlFor="email" className="text-sm ">
+                                Email Address
+                            </label>
 
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-            <div className="flex flex-col my-4 gap-2">
-              <label htmlFor="password">Password:</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                required
+                                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
+                            />
+                        </div>
+                        <div className="flex flex-col my-4 gap-2">
+                            <label htmlFor="password">Password:</label>
+                            <input
+                                type="password"
+                                id="password"
+                                name="password"
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                required
+                                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
+                            />
+                        </div>
 
-            <label className="text-xs ">
-              I have forgotten my password{" "}
-              <span className="text-blue-500 underline">Reset</span>
-            </label>
+                        <label className="text-xs ">
+                            I have forgotten my password{' '}
+                            <span className="text-blue-500 underline">
+                                Reset
+                            </span>
+                        </label>
 
-            <input
-              type="submit"
-              value="Login"
-              className={
-                "text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3"
-              }
-            />
-            <p className="text-center mt-4">
-              Don't have an account?{" "}
-              <Link to={"/signin"} className="text-blue-500 underline">
-                Create an account
-              </Link>
-            </p>
-          </div>
-        </div>
-      </form>
-      {showModal && (
-        <PopupModal
-          message="Congratulations, you have created an account!"
-          onClose={handleCloseModal}
-        />
-      )}
-    </>
-  );
+                        <input
+                            type="submit"
+                            value="Login"
+                            className={
+                                'text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3'
+                            }
+                        />
+                        <p className="text-center mt-4">
+                            Don't have an account?{' '}
+                            <Link
+                                to={'/signin'}
+                                className="text-blue-500 underline"
+                            >
+                                Create an account
+                            </Link>
+                        </p>
+                    </div>
+                </div>
+            </form>
+            {showModal && (
+                <PopupModal
+                    message="Congratulations, you have created an account!"
+                    onClose={handleCloseModal}
+                />
+            )}
+        </>
+    )
 }
 
-export default Login;
+export default Login
