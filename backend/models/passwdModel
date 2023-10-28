@@ -1,0 +1,7 @@
+const password = {
+    name: 'password',
+}
+
+module.exports{
+    password,
+}
