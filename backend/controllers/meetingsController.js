@@ -7,7 +7,7 @@ const User = require('../models/userModel')
 const getSingleMeeting = asyncHandler(async (req, res) => {
     const meeting = await Meeting.findById(req.params.id)
     if (meeting) {
-        const { owner, title, description, time, location, attendees, tag } =
+        const { owner, title, description, time, location, private, attendees, tag } =
             meeting
         const attendeesSlots = meeting.attendeesSlots
         res.status(200).json({
@@ -17,6 +17,7 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
                 title,
                 description,
                 time,
+                private,
                 location,
                 attendees,
                 attendeesSlots,
@@ -44,6 +45,7 @@ const setMeeting = asyncHandler(async (req, res) => {
         password,
         location,
         attendeesSlots,
+        private,
         tag,
     } = req.body
     const currentDate = new Date() // Tworzy obiekt Date z bieżącą datą i czasem
@@ -80,6 +82,7 @@ const setMeeting = asyncHandler(async (req, res) => {
         description,
         time,
         password,
+        private,
         location,
         attendees: [owner],
         private: req.body.private,
@@ -240,24 +243,36 @@ const enterPrivateMeeting = asyncHandler(async (req, res) => {
     const { id } = req.params
     const { password, email } = req.body
 
-    console.log(password)
+    // Sprawdź, czy istnieje spotkanie o podanym id
     const meeting = await Meeting.findById(id)
-    const meetingSlots = meeting.attendeesSlots
 
-    password === meeting.password ? res.status(200) : res.status(400)
+    if (!meeting) {
+        return res.status(404).send('Spotkanie nie zostało znalezione.')
+    }
 
-    console.log(User)
+    // Porównaj hasło
+    if (password !== meeting.password) {
+        return res.status(400).send('Nieprawidłowe hasło.')
+    }
 
+    // Spróbuj znaleźć użytkownika po adresie email
     const userToAddToMeeting = await User.findOne({ email })
 
-    const userToAddToMeetingId = userToAddToMeeting.id
-    console.log(userToAddToMeetingId)
+    if (!userToAddToMeeting) {
+        return res
+            .status(404)
+            .send('Użytkownik o podanym adresie email nie został znaleziony.')
+    }
 
-    if (meetingSlots > meeting.attendees.length) {
+    const userToAddToMeetingId = userToAddToMeeting.id
+
+    if (meeting.attendeesSlots > meeting.attendees.length) {
         meeting.attendees.push(userToAddToMeetingId)
     }
 
-    console.log(meeting)
+    await meeting.save()
+
+    return res.status(200).send('Użytkownik został dodany do spotkania.')
 })
 
 module.exports = {
