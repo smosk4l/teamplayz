@@ -5,109 +5,113 @@ import { useState } from 'react'
 import useAuthStore from '../../state/authState'
 import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
 import PopupModal from '../Modal/PopupModal'
+import * as Yup from 'yup'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Form, Formik } from 'formik'
+import { emailRegex, messages } from '../../utils/constants'
+import Input from '../UI/Form/Input'
+import FormHeading from '../UI/Form/FormHeading'
+import Button from '../UI/Button'
 
 function Login() {
   const { setUser } = useAuthStore()
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [showModal, setShowModal] = useState(false)
 
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    if (email.trim() === '') {
-      alert('Proszę wprowadzić adres e-mail.')
-      return
-    }
-
-    if (password.trim() === '') {
-      alert('Proszę wprowadzić hasło.')
-      return
-    }
-
+  const handleSubmit = async (values) => {
     setIsLoading(true)
-    try {
-      const { data } = await axios.post(
-        'http://localhost:8000/api/users/login',
-        {
-          email,
-          password,
-        }
-      )
-      setUser(data)
 
-      setTimeout(() => {
+    await axios
+      .post('http://localhost:8000/api/users/login', { ...values })
+      .then(({ data }) => {
+        setUser(data)
+        toast.success('Logowanie powiodło się')
+        setShowModal(true)
+      })
+      .catch((error) => {
+        console.error(error)
+        toast.error('Logowanie nie powiodło się.')
+      })
+      .finally(() => {
         setIsLoading(false)
-      }, 1000)
-
-      setShowModal(true)
-    } catch (error) {
-      console.error(error)
-      alert('Logowanie nie działa.')
-    }
+      })
   }
 
   const handleCloseModal = () => setShowModal(false)
+
+  const initialValues = {
+    email: '',
+    password: '',
+  }
+
+  const validationSchema = Yup.object().shape({
+    password: Yup.string().required(messages.fieldRequired),
+    email: Yup.string()
+      .email(messages.invalidEmail)
+      .matches(emailRegex, messages.invalidEmail)
+      .required(messages.fieldRequired),
+  })
 
   return (
     <>
       <Navbar />
       {isLoading && <LoadingCircle />}
-      <form onSubmit={handleSubmit} className="flex flex-col items-center my-6">
-        <div className="max-w-[500px] w-full">
-          <h1 className="text-black-link text-2xl text-center font-bold mb-2">
-            Log in to your account
-          </h1>
-          <div className="w-full px-12">
-            <div className="flex flex-col mt-4 gap-2">
-              <label htmlFor="email" className="text-sm ">
-                Email Address
-              </label>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        validateOnChange={false}
+        validateOnMount={false}
+        validateOnBlur={false}
+        onSubmit={handleSubmit}
+      >
+        {({ handleSubmit, handleChange, values, errors }) => (
+          <Form
+            onSubmit={handleSubmit}
+            className="my-6 flex flex-col items-center"
+          >
+            <div className="w-full max-w-[500px]">
+              <FormHeading>Log in to your account</FormHeading>
+              <div className="my-2 w-full px-12">
+                <Input
+                  type="email"
+                  text="E-mail"
+                  id="email"
+                  name="email"
+                  handleChange={handleChange}
+                  error={errors.email}
+                  required
+                />
 
-              <input
-                type="email"
-                id="email"
-                name="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
+                <Input
+                  type="password"
+                  text="Password"
+                  id="password"
+                  name="password"
+                  handleChange={handleChange}
+                  error={errors.password}
+                  required
+                />
+
+                <label className="text-xs ">
+                  I have forgotten my password{' '}
+                  <span className="text-blue-500 underline">Reset</span>
+                </label>
+
+                <Button type={'submit'} text={'Login'} />
+
+                <p className="mt-4 text-center">
+                  Don't have an account?{' '}
+                  <Link to={'/signin'} className="text-blue-500 underline">
+                    Create an account
+                  </Link>
+                </p>
+              </div>
             </div>
-            <div className="flex flex-col my-4 gap-2">
-              <label htmlFor="password">Password:</label>
-              <input
-                type="password"
-                id="password"
-                name="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+          </Form>
+        )}
+      </Formik>
 
-            <label className="text-xs ">
-              I have forgotten my password{' '}
-              <span className="text-blue-500 underline">Reset</span>
-            </label>
-
-            <input
-              type="submit"
-              value="Login"
-              className={
-                'text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3'
-              }
-            />
-            <p className="text-center mt-4">
-              Don't have an account?{' '}
-              <Link to={'/signin'} className="text-blue-500 underline">
-                Create an account
-              </Link>
-            </p>
-          </div>
-        </div>
-      </form>
       {showModal && (
         <PopupModal
           message="Congratulations, you have created an account!"

@@ -1,67 +1,40 @@
-import Navbar from '../Navbar/Navbar'
-import { Link, useNavigate } from 'react-router-dom'
-import { useState } from 'react'
 import axios from 'axios'
-import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
-import { Formik } from 'formik'
+import { Form, Formik } from 'formik'
+import { useState } from 'react'
+import { Link, useNavigate } from 'react-router-dom'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import * as Yup from 'yup'
 
+import Navbar from '../Navbar/Navbar'
+import Button from '../UI/Button'
+import Checkbox from '../UI/Form/Checkbox'
+import FormHeading from '../UI/Form/FormHeading'
+import FormSubHeading from '../UI/Form/FormSubHeading'
+import Input from '../UI/Form/Input'
+import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
+import { emailRegex, messages } from '../../utils/constants'
+import { validationSchema } from './validation'
 function RegistrationForm() {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [isTermsAccepted, setIsTermsAccepted] = useState(false)
-  const [errors, setErrors] = useState([])
   const [isLoading, setIsLoading] = useState(false)
-
   const navigate = useNavigate()
 
-  const handleSubmit = async (event) => {
-    setErrors([])
-    event.preventDefault()
-
-    if (password !== confirmPassword) {
-      setErrors((prev) => [...prev, 'Podane hasła nie są takie same'])
-      return
-    }
-
-    if (!isTermsAccepted) {
-      setErrors((prev) => [...prev, 'Proszę zaakceptować regulamin.'])
-      return
-    }
-
+  const handleSubmit = async (values) => {
     setIsLoading(true)
 
-    try {
-      await axios.post('http://localhost:8000/api/users/', {
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
-        isTermsAccepted,
+    await axios
+      .post('http://localhost:8000/api/users/', {
+        ...values,
       })
-
-      setTimeout(() => {
-        setIsLoading(false)
-      }, 2000)
-
-      setFirstName('')
-      setLastName('')
-      setEmail('')
-      setPassword('')
-      setConfirmPassword('')
-      setIsTermsAccepted(false)
-
-      return navigate('/login')
-    } catch (error) {
-      console.error(error)
-      // Todo popup model register failed
-
-      alert('Rejestracja nie powiodła się. Spróbuj ponownie.')
-    }
+      .then(() => {
+        toast.success('Konto zostało utworzone')
+        navigate('/login')
+      })
+      .catch(({ response }) => {
+        if (response.status === 409) toast.error('User already exists')
+        else toast.error('Something went wrong')
+      })
+      .finally(setIsLoading(false))
   }
 
   const initialValues = {
@@ -73,143 +46,86 @@ function RegistrationForm() {
     isTermsAccepted: false,
   }
 
-  const validationSchema = Yup.object().shape({
-    password: Yup.string().required('To pole jest wymagane'),
-    confirmPassword: Yup.string()
-      .required('To pole jest wymagane')
-      .oneOf([Yup.ref('password')], 'Podane hasła nie są takie same'),
-    isTermsAccepted: Yup.boolean().oneOf(
-      [true],
-      'Proszę zaakceptować regulamin.'
-    ),
-  })
-
   return (
     <>
       <Navbar />
       {isLoading && <LoadingCircle />}
 
-      {errors && errors.length > 0 && (
-        <div className="bg-red-500 w-full min-h-[4rem] sticky top-0">
-          <ul>
-            {errors.map((error) => {
-              return <li key={crypto.randomUUID()}>{error}</li>
-            })}
-          </ul>
-        </div>
-      )}
-
       <Formik
         initialValues={initialValues}
-        validate={validationSchema}
-        onSubmit={(values, { setSubmitting }) => {
-          setTimeout(() => {
-            alert(JSON.stringify(values, null, 2))
-            setSubmitting(false)
-          }, 400)
-        }}
+        validationSchema={validationSchema}
+        validateOnChange={false}
+        validateOnMount={false}
+        validateOnBlur={false}
+        onSubmit={handleSubmit}
       >
-        {({ handleSubmit, handleChange, values }) => (
-          <form
+        {({ handleSubmit, handleChange, values, errors, submitForm }) => (
+          <Form
             onSubmit={handleSubmit}
             method="POST"
-            className="flex flex-col items-center my-6"
+            className="my-6 flex flex-col items-center"
           >
-            {console.log(values)}
+            <div className="w-full max-w-[500px]">
+              <FormHeading title={'Create an Account'} />
+              <FormSubHeading
+                title={'Sign up now to get started with an account.'}
+              />
 
-            <div className="max-w-[500px] w-full">
-              <h1 className="text-black-link text-2xl text-center font-bold mb-2">
-                Create an Account
-              </h1>
-              <h2 className="text-link text-sm text-center font-medium">
-                Sign up now to get started with an account.
-              </h2>
               <div className="w-full px-12">
-                <div className="flex flex-col mt-4 gap-2">
-                  <label htmlFor="firstName" className="text-sm ">
-                    First name
-                  </label>
-
-                  <input
-                    type="text"
-                    id="firstName"
-                    name="firstName"
-                    onChange={handleChange}
-                    required
-                    className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div className="flex flex-col mt-4 gap-2">
-                  <label htmlFor="firstName" className="text-sm ">
-                    Last name
-                  </label>
-
-                  <input
-                    type="text"
-                    id="lastName"
-                    name="lastName"
-                    onChange={handleChange}
-                    required
-                    className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div className="flex flex-col mt-4 gap-2">
-                  <label htmlFor="email" className="text-sm ">
-                    Email Address
-                  </label>
-
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    onChange={handleChange}
-                    required
-                    className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div className="flex flex-col mt-4 gap-2">
-                  <label htmlFor="password">Password:</label>
-                  <input
-                    type="password"
-                    id="password"
-                    name="password"
-                    onChange={handleChange}
-                    required
-                    className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-                <div className="flex flex-col my-4 gap-2">
-                  <label htmlFor="confirmPassword">Confirm Password</label>
-                  <input
-                    type="password"
-                    id="confirmPassword"
-                    name="confirmPassword"
-                    onChange={handleChange}
-                    required
-                    className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-
-                <label className="text-xs ">
-                  <input
-                    type="checkbox"
-                    checked={values.isTermsAccepted}
-                    onChange={handleChange}
-                    className="mr-3 "
-                  />
-                  I have read and agree to the
-                  <span className="text-blue-500 underline">
-                    Terms of Service
-                  </span>
-                </label>
-                <input
-                  type="submit"
-                  value="Get Started"
-                  className={
-                    'text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3'
-                  }
+                <Input
+                  type="text"
+                  text="First name"
+                  id="firstName"
+                  name="firstName"
+                  handleChange={handleChange}
+                  error={errors.firstName}
+                  required
                 />
-                <p className="text-center mt-4">
+                <Input
+                  type="text"
+                  text="Last name"
+                  id="lastName"
+                  name="lastName"
+                  handleChange={handleChange}
+                  error={errors.lastName}
+                  required
+                />
+                <Input
+                  type="email"
+                  text="Email Address"
+                  id="email"
+                  name="email"
+                  handleChange={handleChange}
+                  error={errors.email}
+                  required
+                />
+                <Input
+                  type="password"
+                  text="Password"
+                  id="password"
+                  name="password"
+                  handleChange={handleChange}
+                  error={errors.password}
+                  required
+                />
+                <Input
+                  type="password"
+                  text="Confirm Password"
+                  id="confirmPassword"
+                  name="confirmPassword"
+                  handleChange={handleChange}
+                  error={errors.confirmPassword}
+                  required
+                />
+                <Checkbox
+                  id={'isTermsAccepted'}
+                  isChecked={values.isTermsAccepted}
+                  handleChange={handleChange}
+                  text={'I have read and agree to the'}
+                  spanText={'Terms of Service'}
+                />
+                <Button type={'submit'} text={'Get Started'} />
+                <p className="mt-4 text-center">
                   Have an account?
                   <Link to={'/login'} className="text-blue-500 underline">
                     Log in
@@ -217,7 +133,7 @@ function RegistrationForm() {
                 </p>
               </div>
             </div>
-          </form>
+          </Form>
         )}
       </Formik>
     </>

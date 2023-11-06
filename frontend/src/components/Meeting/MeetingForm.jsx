@@ -1,159 +1,142 @@
 import Navbar from '../Navbar/Navbar'
+import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
 import axios from 'axios'
 import { useState } from 'react'
-
+import * as Yup from 'yup'
+import { toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { Form, Formik } from 'formik'
+import { emailRegex, messages } from '../../utils/constants'
 import useAuthState from '../../state/authState'
-
+import FormHeading from '../UI/Form/FormHeading'
+import Checkbox from '../UI/Form/Checkbox'
+import Button from '../UI/Button'
+import Input from '../UI/Form/Input'
 function MeetingForm() {
-  const [title, setTitle] = useState('')
-  const [description, setDescription] = useState('')
-  const [date, setDate] = useState('')
-  const [location, setLocation] = useState('')
-  const [tag, setTag] = useState('')
-  const [maxSlots, setMaxSlots] = useState(0)
-
+  const [isLoading, setIsLoading] = useState(false)
   const { user } = useAuthState()
-  const handleSubmit = async (event) => {
-    event.preventDefault()
-    if (title.trim() === '') {
-      alert('Proszę wprowadzić adres e-mail.')
-      return
-    }
 
-    if (description.trim() === '') {
-      alert('Proszę wprowadzić hasło.')
-      return
-    }
+  const handleSubmit = async (values) => {
+    setIsLoading(true)
 
-    if (location.trim() === '') {
-      alert('Proszę wprowadzić hasło.')
-      return
-    }
-
-    if (tag.trim() === '') {
-      alert('Proszę wprowadzić hasło.')
-      return
-    }
-
-    try {
-      await axios.post('http://localhost:8000/api/meetings/createMeeting', {
-        owner: user.id,
-        title,
-        description,
-        time: date,
-        tag,
-        location,
-        attendees: [user.id],
-        attendeesSlots: maxSlots,
+    await axios
+      .post('http://localhost:8000/api/meetings/createMeeting', {
+        ...values,
       })
-      alert('Dodano do bazy')
-    } catch (error) {
-      console.error(error)
-      alert('Nie udało dodać się do bazy')
-    }
+      .then((response) => {
+        toast.success(messages.createMeetingError)
+      })
+      .catch(() => {
+        toast.error(messages.createMeetingError)
+      })
+      .finally(() => {
+        setIsLoading(false)
+      })
   }
+  const initialValues = {
+    title: '',
+    description: '',
+    time: '',
+    tag: '',
+    location: '',
+    attendees: [user.id],
+    attendeesSlots: 0,
+    isPrivate: false,
+    owner: user.id,
+  }
+
+  const validationSchema = Yup.object().shape({})
+
   return (
     <>
       <Navbar />
-      <form onSubmit={handleSubmit} className="flex flex-col items-center my-6">
-        <div className="max-w-[500px] w-full">
-          <h1 className="text-black-link text-2xl text-center font-bold mb-2">
-            Create a new meeting
-          </h1>
-          <div className="w-full min px-12">
-            <div className="flex flex-col mt-4 gap-2">
-              <label htmlFor="title" className="text-sm ">
-                Title
-              </label>
+      {isLoading && <LoadingCircle />}
 
-              <input
-                type="text"
-                id="title"
-                name="title"
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
-            <div className="flex flex-col my-4 gap-2">
-              <label htmlFor="description">Description</label>
-              <input
-                type="text"
-                id="description"
-                name="description"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+      <Formik
+        initialValues={initialValues}
+        validationSchema={validationSchema}
+        validateOnChange={false}
+        validateOnMount={false}
+        validateOnBlur={false}
+        onSubmit={handleSubmit}
+      >
+        {({ handleSubmit, handleChange, values, errors }) => (
+          <Form
+            onSubmit={handleSubmit}
+            className="my-6 flex flex-col items-center"
+          >
+            {console.log(values)}
 
-            <div className="flex flex-col my-4 gap-2">
-              <label htmlFor="date">Date</label>
-              <input
-                type="date"
-                id="date"
-                name="date"
-                value={date}
-                min={Date.now()}
-                max={'2024-01-01'}
-                onChange={(e) => setDate(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+            <div className="w-full max-w-[500px]">
+              <FormHeading>Create a new meeting</FormHeading>
+              <div className="min w-full px-12">
+                <Input
+                  type="text"
+                  text="Title"
+                  id="title"
+                  name="title"
+                  handleChange={handleChange}
+                  error={errors.title}
+                />
 
-            <div className="flex flex-col my-4 gap-2">
-              <label htmlFor="location">Location</label>
-              <input
-                type="text"
-                id="location"
-                name="location"
-                value={location}
-                onChange={(e) => setLocation(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+                <Input
+                  type="text"
+                  text="Description"
+                  id="description"
+                  name="description"
+                  handleChange={handleChange}
+                  error={errors.description}
+                />
 
-            <div className="flex flex-col my-4 gap-2">
-              <label htmlFor="tag">Tag</label>
-              <input
-                type="text"
-                id="tag"
-                name="tag"
-                value={tag}
-                onChange={(e) => setTag(e.target.value)}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm shadow-sm focus:outline-none focus:border-indigo-500"
-              />
-            </div>
+                <Input
+                  type="date"
+                  text="Date"
+                  id="time"
+                  name="time"
+                  handleChange={handleChange}
+                  error={errors.time}
+                />
 
-            <div className="flex flex-col my-4 gap-2">
-              <label htmlFor="maxSlots">Available slots</label>
-              <input
-                type="number"
-                min={1}
-                id="maxSlots"
-                name="maxSlots"
-                value={maxSlots}
-                onChange={(e) => setMaxSlots(Number(e.target.value))}
-                required
-                className="w-full border-gray-300 px-3 py-2 rounded-sm
-                  shadow-sm focus:outline-none focus:border-indigo-500"
-              />
+                <Input
+                  type="text"
+                  text="Location"
+                  id="location"
+                  name="location"
+                  handleChange={handleChange}
+                  error={errors.location}
+                />
+
+                <Input
+                  type="text"
+                  text="Tag"
+                  id="tag"
+                  name="tag"
+                  handleChange={handleChange}
+                  error={errors.tag}
+                />
+
+                <Checkbox
+                  text={'Private meeting'}
+                  id={'isPrivate'}
+                  isChecked={values.isPrivate}
+                  handleChange={handleChange}
+                />
+
+                <Input
+                  type="number"
+                  text="Available slots"
+                  id="attendeesSlots"
+                  name="attendeesSlots"
+                  handleChange={handleChange}
+                  error={errors.attendeesSlots}
+                />
+
+                <Button type="submit" text="Create meeting" />
+              </div>
             </div>
-            <input
-              type="submit"
-              value="Create meeting"
-              className={
-                'text-xl font-bold text-white rounded-lg bg-blue-500 mt-6 w-full py-3'
-              }
-            />
-          </div>
-        </div>
-      </form>
+          </Form>
+        )}
+      </Formik>
     </>
   )
 }

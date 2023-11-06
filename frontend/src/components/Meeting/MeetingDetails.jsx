@@ -48,13 +48,13 @@ function MeetingDetails() {
       <Navbar />
       {meeting && (
         <div className="w-full">
-          <main className="flex flex-col gap-2 px-8 py-8 mx-auto mt-12 font-poppins max-w-[600px] shadow-md rounded-lg">
+          <main className="mx-auto mt-12 flex max-w-[600px] flex-col gap-2 rounded-lg px-8 py-8 font-poppins shadow-md">
             <h1 className="text-2xl font-bold">{meeting.title}</h1>
-            <span className="text-sm text-gray-500 tracking-wide ">
+            <span className="text-sm tracking-wide text-gray-500 ">
               {meeting.location}
             </span>
             <span className="font-normal">Description</span>
-            <p className="mb-4 text-sm w-[40ch] text-gray-700">
+            <p className="mb-4 w-[40ch] text-sm text-gray-700">
               {meeting.description}
             </p>
             <div className="flex flex-col gap-2 px-8 py-4 ">
@@ -66,28 +66,28 @@ function MeetingDetails() {
               <div className="flex flex-col gap-4">
                 <button
                   onClick={addUserToMeeting}
-                  className={'w-full bg-green-600 text-white  py-2'}
+                  className={'w-full bg-green-600 py-2  text-white'}
                 >
                   Join to meeting
                 </button>
-                <div className="flex gap-2 w-full">
+                <div className="flex w-full gap-2">
                   <button
                     onClick={() => navigate('/meetings')}
                     className={
-                      'border border-green-600 px-6 py-1 w-full rounded-lg'
+                      'w-full rounded-lg border border-green-600 px-6 py-1'
                     }
                   >
-                    <div className="flex gap-2 justify-center items-center text-green-600 ">
+                    <div className="flex items-center justify-center gap-2 text-green-600 ">
                       <TbArrowBackUp className="text-xl" />
                       <span>Return</span>
                     </div>
                   </button>
                   <button
                     className={
-                      'border border-green-600 px-6 py-1 w-full rounded-lg'
+                      'w-full rounded-lg border border-green-600 px-6 py-1'
                     }
                   >
-                    <div className="flex gap-2 justify-center items-center text-green-600">
+                    <div className="flex items-center justify-center gap-2 text-green-600">
                       <MdOutlineIosShare className="text-xl" />
                       <span>Share</span>
                     </div>

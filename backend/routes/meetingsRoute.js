@@ -5,7 +5,7 @@ const {
     getAllMeetings,
     getPublicMeetings,
     getSingleMeeting,
-    setMeeting,
+    createMeeting,
     updatedMeeting,
     deleteMeeting,
     addUserToMeeting,
@@ -20,7 +20,7 @@ router.get('/public', getPublicMeetings)
 router.get('/byOwner/:id', getMeetingsByOwner)
 
 router.get('/userMeetings/:id', getUserMeetings)
-router.post('/createMeeting', setMeeting)
+router.post('/createMeeting', createMeeting)
 router.post('/enterPrivateMeeting/:id', enterPrivateMeeting)
 
 router.get('/:id', getSingleMeeting)
