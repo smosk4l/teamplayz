@@ -24,6 +24,7 @@ function MeetingList() {
   return (
     <>
       <Navbar />
+      {/* List of meetings */}
       {meetings.map((meeting) => (
         <MeetingItem
           link={'/meetings/' + meeting._id}

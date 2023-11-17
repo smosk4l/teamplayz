@@ -3,8 +3,17 @@ import { IoLocationOutline, IoHeartOutline } from 'react-icons/io5'
 
 function MeetingItem(props) {
   return (
-    <>
-      <div className="max-w-[1200px]  mt-4 mx-6 xl:mx-auto">
+    <li className="my-8 list-none bg-red-50  px-4 py-4">
+      <div className="flex items-center gap-8">
+        <div className="border- flex flex-col gap-1 border-r border-gray-200 px-4">
+          <span className="font-bold">3:30 PM</span>
+          <span className="font-light text-gray-500">30 minutes</span>
+        </div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      {/* <div className="max-w-[1200px]  mt-4 mx-6 xl:mx-auto">
         <Link to={props.link}>
           <div className="px-6 py-4 bg-white my-2 rounded-xl relative border shadow-sm">
             <ul>
@@ -36,8 +45,8 @@ function MeetingItem(props) {
             )}
           </div>
         </Link>
-      </div>
-    </>
+      </div> */}
+    </li>
   )
 }
 
