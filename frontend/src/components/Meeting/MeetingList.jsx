@@ -25,20 +25,22 @@ function MeetingList() {
     <>
       <Navbar />
       {/* List of meetings */}
-      {meetings.map((meeting) => (
-        <MeetingItem
-          link={'/meetings/' + meeting._id}
-          id={meeting._id}
-          key={crypto.randomUUID()}
-          title={meeting.title}
-          tag={meeting.tag}
-          location={meeting.location}
-          description={meeting.description}
-          players={meeting.attendees.length}
-          maxPlayers={meeting.attendeesSlots}
-          turnLikeIcon={true}
-        />
-      ))}
+      <div className="w-screen">
+        {meetings.map((meeting) => (
+          <MeetingItem
+            link={'/meetings/' + meeting._id}
+            id={meeting._id}
+            key={crypto.randomUUID()}
+            title={meeting.title}
+            tag={meeting.tag}
+            location={meeting.location}
+            description={meeting.description}
+            players={meeting.attendees.length}
+            maxPlayers={meeting.attendeesSlots}
+            turnLikeIcon={true}
+          />
+        ))}
+      </div>
     </>
   )
 }
