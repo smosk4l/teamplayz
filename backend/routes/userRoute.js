@@ -17,6 +17,5 @@ router.get('/getAuth', checkAuth, getAuth)
 router.route('/:id').put(updateUser).delete(deleteUser)
 router.get('/activate/:code', authorizeUser)
 router.post('/upload/image', updateUser) // Dodaj nowy endpoint do przesyłania plików
-router.post('/image/add', updatePhoto) // Dodaj nowy
-
+router.post('/image/add', updatePhoto);
 module.exports = router

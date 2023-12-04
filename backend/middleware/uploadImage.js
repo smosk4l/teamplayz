@@ -2,20 +2,24 @@ const router = require('express').Router()
 const multer = require('multer')
 const { v4: uuidv4 } = require('uuid')
 let path = require('path')
-let User = require('../models/userModel')
+let UserSchema = require('../models/userModel')
 
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, 'images')
+        // Use an absolute path or dynamically create the path based on the current working directory
+        const dest = path.join(process.cwd(), 'test-images')
+        cb(null, dest)
     },
     filename: function (req, file, cb) {
-        cb(null, uuidv4() + '-' + Date.now() + path.extname(file.originalname))
+        // Generate a unique filename using uuid
+        const extension = path.extname(file.originalname)
+        const uniqueFilename = uuidv4() + extension
+        cb(null, uniqueFilename)
     },
 })
-
-const fileFilter = (req, file, cb) => {
+const fileFilter = (req, photo, cb) => {
     const allowedFileTypes = ['image/jpeg', 'image/jpg', 'image/png']
-    if (allowedFileTypes.includes(file.mimetype)) {
+    if (allowedFileTypes.includes(photo.mimetype)) {
         cb(null, true)
     } else {
         cb(null, false)

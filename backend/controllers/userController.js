@@ -78,13 +78,16 @@ const registerUser = asyncHandler(async (req, res) => {
 //@route POST /api/users/login
 //access Public
 const loginUser = asyncHandler(async (req, res) => {
-    const { email, password, isAuthorized } = req.body
-    // console.log('isAuthorized:', isAuthorized) // Add this line for debugging
-    const user = await User.findOne({ email })
+    const { email, password } = req.body;
+
+    // Fetch user data from the database
+    const user = await User.findOne({ email });
+
     if (user && (await bcrypt.compare(password, user.password))) {
-        if (isAuthorized) {
-            // Generowanie tokena JWT
-            const token = generateToken(user._id)
+        // Check isAuthorized status in the database
+        if (user.isAuthorized) {
+            // Generate JWT token
+            const token = generateToken(user._id);
 
             return res
                 .cookie('access_token', token, {
@@ -96,21 +99,21 @@ const loginUser = asyncHandler(async (req, res) => {
                     lastName: user.lastName,
                     email: user.email,
                     id: user.id,
-                })
+                });
         } else {
-            console.log('Account not authorized') // Add this line for debugging
+            console.log('Account not authorized');
             res.status(401).json({
-                message:
-                    'Account not activated. Please activate your account via email.',
-            })
+                message: 'Account not activated. Please activate your account via email.',
+            });
         }
     } else {
-        console.log('Invalid credentials') // Add this line for debugging
+        console.log('Invalid credentials');
         res.status(400).json({
             message: 'Invalid credentials',
-        })
+        });
     }
-})
+});
+
 //@desc Delete user
 //@route DELETE /api/users/:id
 //access Private
@@ -129,7 +132,7 @@ const deleteUser = asyncHandler(async (req, res) => {
 //@route PUT /api/users/:id
 //access Private
 const updateUser = asyncHandler(async (req, res) => {
-    const { firstName, lastName, email, password } = req.body
+    const { firstName, lastName, email, password, } = req.body
     const user = await User.findById(req.params.id)
 
     if (user) {
