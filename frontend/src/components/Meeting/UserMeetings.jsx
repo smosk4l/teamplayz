@@ -43,25 +43,24 @@ function UserMeetings() {
       />
 
       {!meetings && (
-        <div className="flex flex-col justify-center items-center gap-2">
+        <div className="flex flex-col items-center justify-center gap-2">
           <h1 className="text-center text-3xl">
             You do not attend or organize any meeting
           </h1>
 
           <Link
             to={'/meetings'}
-            className="bg-blue-500 mt-6 px-5 py-2  text-white rounded-lg"
+            className="mt-6 rounded-lg bg-blue-500 px-5  py-2 text-white"
           >
             View meetings
           </Link>
         </div>
       )}
       {meetings?.map((meeting) => (
-        <div className="relative">
+        <div key={crypto.randomUUID()} className="relative">
           <MeetingItem
             link={'/meetings/' + meeting._id}
             id={meeting._id}
-            key={crypto.randomUUID()}
             title={meeting.title}
             tag={meeting.tag}
             location={meeting.location}

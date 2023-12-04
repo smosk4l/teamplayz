@@ -16,5 +16,4 @@ app.use(cors())
 app.use('/api/meetings', require('./routes/meetingsRoute'))
 app.use('/api/users', require('./routes/userRoute'))
 app.use(errorHandler)
-
 app.listen(port, () => console.log(`Server started on port:${port}`))
