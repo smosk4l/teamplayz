@@ -1,12 +1,10 @@
+// meetingModel.js
 const mongoose = require('mongoose')
-const Password = {
-    pass: '',
-}
+
 const meetingSchema = mongoose.Schema(
     {
         owner: {
             type: mongoose.Schema.Types.ObjectId,
-            // required: true,
             ref: 'User',
         },
         title: {
@@ -30,10 +28,18 @@ const meetingSchema = mongoose.Schema(
         },
         tag: {
             type: String,
-            required: [true, 'Please add a tag for meeting'],
+            required: [true, 'Please add a tag for the meeting'],
         },
-        location: {
+        city: {
             type: String,
+            required: true,
+        },
+        lng: {
+            type: Number,
+            required: true,
+        },
+        lat: {
+            type: Number,
             required: true,
         },
         private: {
@@ -48,7 +54,6 @@ const meetingSchema = mongoose.Schema(
         ],
         attendeesSlots: {
             type: Number,
-            // required: true,
             validate: {
                 validator: function (value) {
                     return value <= 30
@@ -61,6 +66,7 @@ const meetingSchema = mongoose.Schema(
         timestamps: true,
     }
 )
+
 
 const Meeting = mongoose.model('Meeting', meetingSchema)
 
