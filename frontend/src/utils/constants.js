@@ -1,4 +1,4 @@
-export const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/
+export const emailRegex = /^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}$/;
 
 export const messages = {
   fieldRequired: 'To pole jest wymagane',
@@ -7,4 +7,4 @@ export const messages = {
   acceptTerms: 'Proszę zaakceptować regulamin',
   createMeetingError: 'Nie udało się stworzyć spotkania',
   createMeeting: 'Spotkanie stworzone',
-}
+};

@@ -1,6 +1,6 @@
-import React from 'react'
-import { IoCloseOutline } from 'react-icons/io5'
-import { Link } from 'react-router-dom'
+import React from 'react';
+import { IoCloseOutline } from 'react-icons/io5';
+import { Link } from 'react-router-dom';
 
 function PopupModal({ message, onClose }) {
   return (
@@ -27,7 +27,7 @@ function PopupModal({ message, onClose }) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
-export default PopupModal
+export default PopupModal;

@@ -1,6 +1,6 @@
-import Navbar from '../Navbar/Navbar'
-import headerIllustration from '../../assets/header_ilustration.png'
-import Button from '../UI/Button/Button'
+import Navbar from '../Navbar/Navbar';
+import headerIllustration from '../../assets/header_ilustration.png';
+import Button from '../UI/Button/Button';
 
 function Header() {
   return (
@@ -36,7 +36,7 @@ function Header() {
         </Button>
       </main>
     </header>
-  )
+  );
 }
 
-export default Header
+export default Header;

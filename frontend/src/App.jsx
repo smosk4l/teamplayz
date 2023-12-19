@@ -5,7 +5,6 @@ import LoginForm from './components/Login/LoginForm'
 import MeetingList from './components/Meeting/MeetingList'
 import MeetingForm from './components/Meeting/MeetingForm'
 import MeetingDetails from './components/Meeting/MeetingDetails'
-import { Upload } from './components/Upload/Upload'
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import UserMeetings from './components/Meeting/UserMeetings'
 import { ToastContainer } from 'react-toastify'
@@ -21,7 +20,6 @@ function App() {
           <Route path="/signin" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/meetings" element={<MeetingList />} />
-          <Route path="/upload" element={<Upload />} />
 
           <Route
             path="/meetings/create"

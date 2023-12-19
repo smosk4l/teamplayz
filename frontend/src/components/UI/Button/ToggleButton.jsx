@@ -1,31 +1,33 @@
-import React, { useEffect, useState } from 'react'
-import useAuthState from '../../../state/authState'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react';
+import useAuthState from '../../../state/authState';
+import axios from 'axios';
 
 function ToggleButton({ onMeetingsChange }) {
-  const [meetings, setMeetings] = useState(null)
-  const [isChecked, setIsChecked] = useState(false)
-  const { user } = useAuthState()
-  const [url, setUrl] = useState('userMeetings/' + user.id)
+  const [meetings, setMeetings] = useState(null);
+  const [isChecked, setIsChecked] = useState(false);
+  const { user } = useAuthState();
+  const [url, setUrl] = useState('userMeetings/' + user.id);
 
   const changeUrlHandler = () => {
-    isChecked ? setUrl('userMeetings/' + user.id) : setUrl('byOwner/' + user.id)
-  }
+    isChecked
+      ? setUrl('userMeetings/' + user.id)
+      : setUrl('byOwner/' + user.id);
+  };
 
   const fetchData = async () => {
     try {
       const { data } = await axios.get(
         'http://localhost:8000/api/meetings/' + url
-      )
-      onMeetingsChange(data)
+      );
+      onMeetingsChange(data);
     } catch (error) {
-      console.error(error)
+      console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [url])
+    fetchData();
+  }, [url]);
 
   return (
     <div className="flex justify-center my-8 z-50">
@@ -33,8 +35,8 @@ function ToggleButton({ onMeetingsChange }) {
         htmlFor="Toggle Button"
         className="inline-flex items-center p-2 rounded-md cursor-pointer text-gray-800 ease-linear duration-300"
         onChange={() => {
-          setIsChecked(!isChecked)
-          changeUrlHandler()
+          setIsChecked(!isChecked);
+          changeUrlHandler();
         }}
       >
         <input id="Toggle Button" type="checkbox" className="hidden peer" />
@@ -46,7 +48,7 @@ function ToggleButton({ onMeetingsChange }) {
         </span>
       </label>
     </div>
-  )
+  );
 }
 
-export default ToggleButton
+export default ToggleButton;

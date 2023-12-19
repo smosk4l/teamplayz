@@ -1,38 +1,38 @@
-import Navbar from '../Navbar/Navbar'
-import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
-import axios from 'axios'
-import { useState } from 'react'
-import * as Yup from 'yup'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { Form, Formik } from 'formik'
-import { emailRegex, messages } from '../../utils/constants'
-import useAuthState from '../../state/authState'
-import FormHeading from '../UI/Form/FormHeading'
-import Checkbox from '../UI/Form/Checkbox'
-import Button from '../UI/Button'
-import Input from '../UI/Form/Input'
+import Navbar from '../Navbar/Navbar';
+import LoadingCircle from '../UI/LoadingCircle/LoadingCircle';
+import axios from 'axios';
+import { useState } from 'react';
+import * as Yup from 'yup';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Form, Formik } from 'formik';
+import { emailRegex, messages } from '../../utils/constants';
+import useAuthState from '../../state/authState';
+import FormHeading from '../UI/Form/FormHeading';
+import Checkbox from '../UI/Form/Checkbox';
+import Button from '../UI/Button';
+import Input from '../UI/Form/Input';
 function MeetingForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const { user } = useAuthState()
+  const [isLoading, setIsLoading] = useState(false);
+  const { user } = useAuthState();
 
   const handleSubmit = async (values) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     await axios
       .post('http://localhost:8000/api/meetings/createMeeting', {
         ...values,
       })
       .then((response) => {
-        toast.success(messages.createMeetingError)
+        toast.success(messages.createMeetingError);
       })
       .catch(() => {
-        toast.error(messages.createMeetingError)
+        toast.error(messages.createMeetingError);
       })
       .finally(() => {
-        setIsLoading(false)
-      })
-  }
+        setIsLoading(false);
+      });
+  };
   const initialValues = {
     title: '',
     description: '',
@@ -43,9 +43,9 @@ function MeetingForm() {
     attendeesSlots: 0,
     isPrivate: false,
     owner: user.id,
-  }
+  };
 
-  const validationSchema = Yup.object().shape({})
+  const validationSchema = Yup.object().shape({});
 
   return (
     <>
@@ -138,7 +138,7 @@ function MeetingForm() {
         )}
       </Formik>
     </>
-  )
+  );
 }
 
-export default MeetingForm
+export default MeetingForm;

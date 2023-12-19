@@ -1,10 +1,10 @@
-import axios from 'axios'
-import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai'
+import axios from 'axios';
+import { AiOutlineDelete, AiOutlineEdit } from 'react-icons/ai';
 
 function OrganizingMode(props) {
   const deleteMeeting = async () => {
-    await axios.delete('http://localhost:8000/api/meetings/' + props.id)
-  }
+    await axios.delete('http://localhost:8000/api/meetings/' + props.id);
+  };
   return (
     <div className="flex gap-4 absolute top-4 right-12 ">
       <AiOutlineEdit
@@ -16,7 +16,7 @@ function OrganizingMode(props) {
         onClick={deleteMeeting}
       />
     </div>
-  )
+  );
 }
 
-export default OrganizingMode
+export default OrganizingMode;

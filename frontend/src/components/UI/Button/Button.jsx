@@ -1,4 +1,4 @@
-import { Link } from 'react-router-dom'
+import { Link } from 'react-router-dom';
 
 const Button = (props) => {
   return (
@@ -12,7 +12,7 @@ const Button = (props) => {
         {props.children}
       </button>
     </Link>
-  )
-}
+  );
+};
 
-export default Button
+export default Button;

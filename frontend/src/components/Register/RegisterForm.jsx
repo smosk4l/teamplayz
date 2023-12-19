@@ -16,12 +16,9 @@ import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
 import { emailRegex, messages } from '../../utils/constants'
 import { validationSchema } from './validation'
 function RegistrationForm() {
-  const [isLoading, setIsLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleSubmit = async (values) => {
-    setIsLoading(true)
-
     await axios
       .post('http://localhost:8000/api/users/', {
         ...values,
@@ -34,7 +31,6 @@ function RegistrationForm() {
         if (response.status === 409) toast.error('User already exists')
         else toast.error('Something went wrong')
       })
-      .finally(setIsLoading(false))
   }
 
   const initialValues = {
@@ -49,7 +45,6 @@ function RegistrationForm() {
   return (
     <>
       <Navbar />
-      {isLoading && <LoadingCircle />}
 
       <Formik
         initialValues={initialValues}
@@ -59,81 +54,85 @@ function RegistrationForm() {
         validateOnBlur={false}
         onSubmit={handleSubmit}
       >
-        {({ handleSubmit, handleChange, values, errors, submitForm }) => (
-          <Form
-            onSubmit={handleSubmit}
-            method="POST"
-            className="my-6 flex flex-col items-center"
-          >
-            <div className="w-full max-w-[500px]">
-              <FormHeading title={'Create an Account'} />
-              <FormSubHeading
-                title={'Sign up now to get started with an account.'}
-              />
+        {({ handleSubmit, handleChange, values, errors, isSubmitting }) => (
+          <>
+            {isSubmitting && <LoadingCircle />}
 
-              <div className="w-full px-12">
-                <Input
-                  type="text"
-                  text="First name"
-                  id="firstName"
-                  name="firstName"
-                  handleChange={handleChange}
-                  error={errors.firstName}
-                  required
+            <Form
+              onSubmit={handleSubmit}
+              method="POST"
+              className="my-6 flex flex-col items-center"
+            >
+              <div className="w-full max-w-[500px]">
+                <FormHeading title={'Create an Account'} />
+                <FormSubHeading
+                  title={'Sign up now to get started with an account.'}
                 />
-                <Input
-                  type="text"
-                  text="Last name"
-                  id="lastName"
-                  name="lastName"
-                  handleChange={handleChange}
-                  error={errors.lastName}
-                  required
-                />
-                <Input
-                  type="email"
-                  text="Email Address"
-                  id="email"
-                  name="email"
-                  handleChange={handleChange}
-                  error={errors.email}
-                  required
-                />
-                <Input
-                  type="password"
-                  text="Password"
-                  id="password"
-                  name="password"
-                  handleChange={handleChange}
-                  error={errors.password}
-                  required
-                />
-                <Input
-                  type="password"
-                  text="Confirm Password"
-                  id="confirmPassword"
-                  name="confirmPassword"
-                  handleChange={handleChange}
-                  error={errors.confirmPassword}
-                  required
-                />
-                <Checkbox
-                  id={'isTermsAccepted'}
-                  isChecked={values.isTermsAccepted}
-                  handleChange={handleChange}
-                  text={'I have read and agree to the'}
-                  spanText={'Terms of Service'}
-                />
-                <Button type={'submit'} text={'Get Started'} />
-                <p className="mt-4 text-center">
-                  Have an account?
-                  <Link to={'/login'} className="text-blue-500 underline">
-                    Log in
-                  </Link>
-                </p>
+
+                <div className="w-full px-12">
+                  <Input
+                    type="text"
+                    text="First name"
+                    id="firstName"
+                    name="firstName"
+                    handleChange={handleChange}
+                    error={errors.firstName}
+                    required
+                  />
+                  <Input
+                    type="text"
+                    text="Last name"
+                    id="lastName"
+                    name="lastName"
+                    handleChange={handleChange}
+                    error={errors.lastName}
+                    required
+                  />
+                  <Input
+                    type="email"
+                    text="Email Address"
+                    id="email"
+                    name="email"
+                    handleChange={handleChange}
+                    error={errors.email}
+                    required
+                  />
+                  <Input
+                    type="password"
+                    text="Password"
+                    id="password"
+                    name="password"
+                    handleChange={handleChange}
+                    error={errors.password}
+                    required
+                  />
+                  <Input
+                    type="password"
+                    text="Confirm Password"
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    handleChange={handleChange}
+                    error={errors.confirmPassword}
+                    required
+                  />
+                  <Checkbox
+                    id={'isTermsAccepted'}
+                    isChecked={values.isTermsAccepted}
+                    handleChange={handleChange}
+                    text={'I have read and agree to the'}
+                    spanText={'Terms of Service'}
+                  />
+                  <Button type={'submit'} text={'Get Started'} />
+                  <p className="mt-4 text-center">
+                    Have an account?
+                    <Link to={'/login'} className="text-blue-500 underline">
+                      Log in
+                    </Link>
+                  </p>
+                </div>
               </div>
-            </div>
-          </Form>
+            </Form>
+          </>
         )}
       </Formik>
     </>

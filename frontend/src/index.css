@@ -5,10 +5,10 @@
 @tailwind utilities;
 
 html {
-  font-family: 'Lato';
-  background-color: #f5f6f7;
+    font-family: 'Lato';
+    background-color: #f5f6f7;
 }
 
 .blur-background {
-  @apply backdrop-filter blur-3xl bg-opacity-50;
+    @apply bg-opacity-50 blur-3xl backdrop-filter;
 }
