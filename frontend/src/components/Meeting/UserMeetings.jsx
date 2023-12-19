@@ -1,38 +1,38 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import useAuthState from '../../state/authState'
-import axios from 'axios'
+import { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import useAuthState from '../../state/authState';
+import axios from 'axios';
 
-import Navbar from '../Navbar/Navbar'
-import MeetingItem from './MeetingItem'
-import ToggleButton from '../UI/Button/ToggleButton'
-import OrganizingMode from '../UI/Mode/OrganizingMode'
+import Navbar from '../Navbar/Navbar';
+import MeetingItem from './MeetingItem';
+import ToggleButton from '../UI/Button/ToggleButton';
+import OrganizingMode from '../UI/Mode/OrganizingMode';
 function UserMeetings() {
-  const { user } = useAuthState()
-  const [meetings, setMeetings] = useState(null)
-  const [isOrganizingMode, setIsOrganizingMode] = useState(false)
+  const { user } = useAuthState();
+  const [meetings, setMeetings] = useState(null);
+  const [isOrganizingMode, setIsOrganizingMode] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get(
         'http://localhost:8000/api/meetings/userMeetings/' + user.id
-      )
+      );
 
-      if (!data) return
+      if (!data) return;
 
-      return setMeetings(data)
-    }
+      return setMeetings(data);
+    };
 
-    fetchData().catch(console.error)
-  }, [])
+    fetchData().catch(console.error);
+  }, []);
 
   const handleMeetingsChange = (newMeetings) => {
-    setMeetings(newMeetings)
-  }
+    setMeetings(newMeetings);
+  };
 
   const handleOrganizingMode = () => {
-    setIsOrganizingMode(!isOrganizingMode)
-  }
+    setIsOrganizingMode(!isOrganizingMode);
+  };
 
   return (
     <>
@@ -73,7 +73,7 @@ function UserMeetings() {
         </div>
       ))}
     </>
-  )
+  );
 }
 
-export default UserMeetings
+export default UserMeetings;

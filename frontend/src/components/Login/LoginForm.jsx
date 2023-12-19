@@ -1,49 +1,49 @@
-import { Link } from 'react-router-dom'
-import Navbar from '../Navbar/Navbar'
-import axios from 'axios'
-import { useState } from 'react'
-import useAuthStore from '../../state/authState'
-import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
-import PopupModal from '../Modal/PopupModal'
-import * as Yup from 'yup'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import { Form, Formik } from 'formik'
-import { emailRegex, messages } from '../../utils/constants'
-import Input from '../UI/Form/Input'
-import FormHeading from '../UI/Form/FormHeading'
-import Button from '../UI/Button'
+import { Link } from 'react-router-dom';
+import Navbar from '../Navbar/Navbar';
+import axios from 'axios';
+import { useState } from 'react';
+import useAuthStore from '../../state/authState';
+import LoadingCircle from '../UI/LoadingCircle/LoadingCircle';
+import PopupModal from '../Modal/PopupModal';
+import * as Yup from 'yup';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { Form, Formik } from 'formik';
+import { emailRegex, messages } from '../../utils/constants';
+import Input from '../UI/Form/Input';
+import FormHeading from '../UI/Form/FormHeading';
+import Button from '../UI/Button';
 
 function Login() {
-  const { setUser } = useAuthStore()
-  const [isLoading, setIsLoading] = useState(false)
-  const [showModal, setShowModal] = useState(false)
+  const { setUser } = useAuthStore();
+  const [isLoading, setIsLoading] = useState(false);
+  const [showModal, setShowModal] = useState(false);
 
   const handleSubmit = async (values) => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     await axios
       .post('http://localhost:8000/api/users/login', { ...values })
       .then(({ data }) => {
-        setUser(data)
-        toast.success('Logowanie powiodło się')
-        setShowModal(true)
+        setUser(data);
+        toast.success('Logowanie powiodło się');
+        setShowModal(true);
       })
       .catch((error) => {
-        console.error(error)
-        toast.error('Logowanie nie powiodło się.')
+        console.error(error);
+        toast.error('Logowanie nie powiodło się.');
       })
       .finally(() => {
-        setIsLoading(false)
-      })
-  }
+        setIsLoading(false);
+      });
+  };
 
-  const handleCloseModal = () => setShowModal(false)
+  const handleCloseModal = () => setShowModal(false);
 
   const initialValues = {
     email: '',
     password: '',
-  }
+  };
 
   const validationSchema = Yup.object().shape({
     password: Yup.string().required(messages.fieldRequired),
@@ -51,7 +51,7 @@ function Login() {
       .email(messages.invalidEmail)
       .matches(emailRegex, messages.invalidEmail)
       .required(messages.fieldRequired),
-  })
+  });
 
   return (
     <>
@@ -119,7 +119,7 @@ function Login() {
         />
       )}
     </>
-  )
+  );
 }
 
-export default Login
+export default Login;

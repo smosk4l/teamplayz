@@ -16,7 +16,7 @@ const Input = ({ type, text, id, name, handleChange, required, error }) => {
       />
       {error && <span className="text-sm text-red-600">{error}</span>}
     </div>
-  )
-}
+  );
+};
 
-export default Input
+export default Input;

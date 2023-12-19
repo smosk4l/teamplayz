@@ -1,17 +1,17 @@
-import { Link } from 'react-router-dom'
-import { IoLocationOutline, IoHeartOutline, IoClose } from 'react-icons/io5'
-import { MdLocationPin } from 'react-icons/md'
-import { BiEdit, BiX } from 'react-icons/bi'
+import { Link } from 'react-router-dom';
+import { IoLocationOutline, IoHeartOutline, IoClose } from 'react-icons/io5';
+import { MdLocationPin } from 'react-icons/md';
+import { BiEdit, BiX } from 'react-icons/bi';
 
 interface MeetingItemProps {
-  link: string
-  title: string
-  location: string
-  description: string
-  tag: string
-  players: number
-  maxPlayers: number
-  turnLikeIcon: boolean
+  link: string;
+  title: string;
+  location: string;
+  description: string;
+  tag: string;
+  players: number;
+  maxPlayers: number;
+  turnLikeIcon: boolean;
 }
 
 function MeetingItem({
@@ -25,7 +25,7 @@ function MeetingItem({
   turnLikeIcon,
 }: MeetingItemProps) {
   return (
-    <div className="mx-6  mt-4 max-w-[1200px] xl:mx-auto">
+    <div className="mx-6  mt-4 max-w-[600px] xl:mr-auto">
       <Link to={link}>
         <div className="relative my-2 rounded-xl border bg-white px-6 py-4 shadow-sm">
           <ul>
@@ -84,7 +84,7 @@ function MeetingItem({
     //     <BiX />
     //   </div>
     // </div>
-  )
+  );
 }
 
-export default MeetingItem
+export default MeetingItem;

@@ -1,14 +1,14 @@
-import { Link } from 'react-router-dom'
-import { useState } from 'react'
-import logo from '../../assets/teamplayz.jpg'
-import { HiOutlineMenuAlt4, HiOutlineX } from 'react-icons/hi'
-import useAuthStore from '../../state/authState'
+import { Link } from 'react-router-dom';
+import { useState } from 'react';
+import logo from '../../assets/teamplayz.jpg';
+import { HiOutlineMenuAlt4, HiOutlineX } from 'react-icons/hi';
+import useAuthStore from '../../state/authState';
 
 const Navbar = () => {
-  const { user } = useAuthStore()
+  const { user } = useAuthStore();
 
-  const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const toggleMenu = () => setIsMenuOpen((prev) => !prev)
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const toggleMenu = () => setIsMenuOpen((prev) => !prev);
 
   return (
     <nav className="sticky top-0 z-20 overflow-hidden bg-white">
@@ -67,7 +67,7 @@ const Navbar = () => {
         </li>
       </ul>
     </nav>
-  )
-}
+  );
+};
 
-export default Navbar
+export default Navbar;

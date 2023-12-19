@@ -65,7 +65,7 @@ function LoadingCircle() {
         ></path>
       </svg>
     </div>
-  )
+  );
 }
 
-export default LoadingCircle
+export default LoadingCircle;

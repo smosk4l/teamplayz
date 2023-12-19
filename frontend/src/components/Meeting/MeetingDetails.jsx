@@ -1,47 +1,47 @@
-import { useState, useEffect } from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
-import useAuthState from '../../state/authState'
-import axios from 'axios'
-import Navbar from '../Navbar/Navbar'
-import { TbArrowBackUp } from 'react-icons/tb'
-import { MdOutlineIosShare } from 'react-icons/md'
-import PopupModal from '../Modal/PopupModal'
+import { useState, useEffect } from 'react';
+import { useParams, useNavigate } from 'react-router-dom';
+import useAuthState from '../../state/authState';
+import axios from 'axios';
+import Navbar from '../Navbar/Navbar';
+import { TbArrowBackUp } from 'react-icons/tb';
+import { MdOutlineIosShare } from 'react-icons/md';
+import PopupModal from '../Modal/PopupModal';
 
 function MeetingDetails() {
-  const { user } = useAuthState()
-  const { id } = useParams()
-  const [meeting, setMeeting] = useState(null)
-  const [showModal, setShowModal] = useState(false)
-  const navigate = useNavigate()
+  const { user } = useAuthState();
+  const { id } = useParams();
+  const [meeting, setMeeting] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchData = async () => {
       const { data } = await axios.get(
         'http://localhost:8000/api/meetings/' + id
-      )
+      );
 
-      if (!data) return
+      if (!data) return;
 
-      setMeeting(data.meeting)
-    }
+      setMeeting(data.meeting);
+    };
 
-    fetchData().catch(console.error)
-  }, [])
+    fetchData().catch(console.error);
+  }, []);
 
   const addUserToMeeting = async () => {
-    if (!user) navigate('/login')
+    if (!user) navigate('/login');
 
     const res = await axios.post(
       `http://localhost:8000/api/meetings/${id}/addUser`,
       {
         userId: user.id,
       }
-    )
+    );
 
-    setShowModal(true)
-  }
+    setShowModal(true);
+  };
 
-  const handleCloseModal = () => setShowModal(false)
+  const handleCloseModal = () => setShowModal(false);
 
   return (
     <>
@@ -106,7 +106,7 @@ function MeetingDetails() {
         />
       )}
     </>
-  )
+  );
 }
 
-export default MeetingDetails
+export default MeetingDetails;

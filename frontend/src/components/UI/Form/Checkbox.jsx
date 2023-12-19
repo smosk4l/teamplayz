@@ -1,4 +1,4 @@
-import React from 'react'
+import React from 'react';
 
 const Checkbox = ({ handleChange, id, isChecked, text, spanText }) => {
   return (
@@ -17,7 +17,7 @@ const Checkbox = ({ handleChange, id, isChecked, text, spanText }) => {
         )}
       </label>
     </div>
-  )
-}
+  );
+};
 
-export default Checkbox
+export default Checkbox;
