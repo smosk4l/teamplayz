@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const Meeting = require('../models/meetingModel');
 const User = require('../models/userModel');
-
+const geolib = require('geolib');
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
   if (!meeting) {
@@ -26,11 +26,23 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
 });
 
 const getPublicMeetings = asyncHandler(async (req, res) => {
-  const meetings = await Meeting.find({ private: false });
-  res.status(200).json(meetings);
+  const { page = 1, limit = 10 } = req.query;
+
+  try {
+    const options = {
+      page: parseInt(page, 10),
+      limit: parseInt(limit, 10),
+    };
+
+    const result = await Meeting.paginate({ private: false }, options);
+
+    res.status(200).json(result.docs);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
-// TODO CHANGE CODE => TIME AND DATE
 const createMeeting = asyncHandler(async (req, res) => {
   const {
     owner,
@@ -38,19 +50,23 @@ const createMeeting = asyncHandler(async (req, res) => {
     description,
     time,
     password,
-    location,
     attendeesSlots,
-    private,
     tag,
+    lat,
+    lng,
+    city,
   } = req.body;
   if (
     !owner ||
     !title ||
     !description ||
     !time ||
-    !location ||
+    !lat ||
     !attendeesSlots ||
-    !tag
+    !tag ||
+    !lng ||
+    !lat ||
+    !city
   ) {
     return res.status(400).json({ message: 'Please add all required fields' });
   }
@@ -64,14 +80,16 @@ const createMeeting = asyncHandler(async (req, res) => {
     description,
     time,
     password,
-    private,
-    location,
     attendees: [owner],
     private: req.body.private,
     attendeesSlots,
+    lat,
+    lng,
+    city,
   });
 
   try {
+    console.log(meeting);
     const savedMeeting = await meeting.save();
     return res.status(200).json({
       message: 'Meeting added',
@@ -168,7 +186,7 @@ const getUserMeetings = asyncHandler(async (req, res) => {
   try {
     const meetings = await Meeting.find({ attendees: userId });
     if (meetings.length === 0) {
-      return res.status(400).json({ message: 'Meetings not found' });
+      return res.status(404).json({ message: 'Meetings not found' });
     }
     res.status(200).json(meetings);
   } catch (error) {
@@ -210,8 +228,66 @@ const enterPrivateMeeting = asyncHandler(async (req, res) => {
   await meeting.save();
   return res.status(200).send('Użytkownik został dodany do spotkania.');
 });
+const getMeetingsByDistance = asyncHandler(async (req, res) => {
+  try {
+    console.log(req.body);
 
+    // Check if req.body contains the expected properties
+    if (!req.body || !req.body.latitude || !req.body.longitude) {
+      return res.status(400).json({ error: 'No user coordinates provided' });
+    }
+
+    // User coordinates
+    const userCoordinates = {
+      latitude: parseFloat(req.body.latitude), // Convert to number
+      longitude: parseFloat(req.body.longitude), // Convert to number
+    };
+
+    // Get all meetings
+    const meetings = await Meeting.find({ private: false });
+
+    // Map meetings to objects with distances
+    const meetingsWithDistances = meetings.map((meeting) => {
+      console.log(meeting.lat, meeting.lng);
+      const meetingCoordinates = {
+        latitude: parseFloat(meeting.lat),
+        longitude: parseFloat(meeting.lng),
+      };
+
+      // Calculate distance between the meeting and the user
+      const distance = geolib.getDistance(userCoordinates, meetingCoordinates);
+
+      // Include only meetings within 10 km range
+      if (distance <= 10000) {
+        // Assuming 10 km is your desired range in meters
+        return {
+          meeting: {
+            ...meeting._doc,
+          },
+          distance,
+        };
+      } else {
+        return null; // Exclude meetings outside the range
+      }
+    });
+
+    // Remove null values (meetings outside the range)
+    const validMeetings = meetingsWithDistances.filter(
+      (meeting) => meeting !== null
+    );
+
+    // Sort valid meetings by distance
+    validMeetings.sort((a, b) => a.distance - b.distance);
+
+    // Return sorted meetings
+    res.status(200).json(validMeetings);
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 module.exports = {
+  getNewestMeetings,
   getAllMeetings,
   getPublicMeetings,
   getSingleMeeting,
@@ -223,4 +299,5 @@ module.exports = {
   getMeetingsByOwner,
   getUserMeetings,
   enterPrivateMeeting,
+  getMeetingsByDistance,
 };

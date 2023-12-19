@@ -4,28 +4,38 @@ const User = require('../models/userModel');
 const generateToken = require('../config/getToken');
 const sendEmail = require('../middleware/sendEmailAPI');
 const uuid = require('uuid');
-const upload = require('../middleware/uploadImage');
 const e = require('express');
+
 //@desc Register new user
 //@route POST /api/users
 //access Public
 const updatePhoto = asyncHandler(async (req, res) => {
-  const firstName = req.body.name;
-  const userId = req.body.userId;
-  const photo = req.file;
+  try {
+    const { userId, name } = req.body;
+    const photo = req.file;
 
-  const newUserData = {
-    firstName,
-    userId,
-    photo,
-  };
+    // Odczytaj dane binarne z pliku
+    const photoData = photo.buffer;
 
-  const newUser = new User(newUserData);
+    // Znajdź użytkownika na podstawie userId
+    const user = await User.findById(userId);
 
-  newUser
-    .save()
-    .then(() => res.json('User Added'))
-    .catch((err) => res.status(400).json('Error: ' + err));
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Zapisz dane binarne zdjęcia w modelu użytkownika
+    user.photo = photoData;
+    user.firstName = name || user.firstName;
+
+    // Zapisz zmiany w bazie danych
+    await user.save();
+
+    return res.status(200).json({ message: 'User photo updated successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
 });
 
 const registerUser = asyncHandler(async (req, res) => {
@@ -47,6 +57,7 @@ const registerUser = asyncHandler(async (req, res) => {
   // Hash password
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
+
   // Activation Code
   const activationCode = uuid.v4();
 
@@ -56,7 +67,8 @@ const registerUser = asyncHandler(async (req, res) => {
     lastName,
     email,
     password: hashedPassword,
-    activationCode: activationCode,
+    activationCode,
+    photo: undefined, // Dodaj to pole, aby uniknąć błędów przy tworzeniu nowego użytkownika
   });
 
   if (user) {
@@ -74,35 +86,48 @@ const registerUser = asyncHandler(async (req, res) => {
     res.status(400).json({ error: 'Invalid User Data' });
   }
 });
+
 //@desc Authenticate new user
 //@route POST /api/users/login
 //access Public
 const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
-  // console.log('isAuthorized:', isAuthorized) // Add this line for debugging
-  const user = await User.findOne({ email });
-  if (user && (await bcrypt.compare(password, user.password))) {
-    // Generowanie tokena JWT
-    const token = generateToken(user._id);
 
-    return res
-      .cookie('access_token', token, {
-        httpOnly: true,
-      })
-      .status(200)
-      .json({
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-        id: user.id,
+  // Fetch user data from the database
+  const user = await User.findOne({ email });
+
+  if (user && (await bcrypt.compare(password, user.password))) {
+    // Check isAuthorized status in the database
+    if (user.isAuthorized) {
+      // Generate JWT token
+      const token = generateToken(user._id);
+
+      return res
+        .cookie('access_token', token, {
+          httpOnly: true,
+        })
+        .status(200)
+        .json({
+          firstName: user.firstName,
+          lastName: user.lastName,
+          email: user.email,
+          id: user.id,
+        });
+    } else {
+      console.log('Account not authorized');
+      res.status(401).json({
+        message:
+          'Account not activated. Please activate your account via email.',
       });
+    }
   } else {
-    console.log('Invalid credentials'); // Add this line for debugging
+    console.log('Invalid credentials');
     res.status(400).json({
       message: 'Invalid credentials',
     });
   }
 });
+
 //@desc Delete user
 //@route DELETE /api/users/:id
 //access Private
@@ -117,21 +142,17 @@ const deleteUser = asyncHandler(async (req, res) => {
     throw new Error('User not found');
   }
 });
+
 //@desc Update user
 //@route PUT /api/users/:id
 //access Private
 const updateUser = asyncHandler(async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
-  const user = await User.findById(req.params.id);
+  const { firstName, lastName, email } = req.body;
+  const user = await User.findOne({ email });
 
   if (user) {
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
-    user.email = email || user.email;
-    if (password) {
-      const salt = await bcrypt.genSalt(10);
-      user.password = await bcrypt.hash(password, salt);
-    }
 
     const updatedUser = await user.save();
 
@@ -147,9 +168,6 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
-const getAuth = asyncHandler(async (req, res) => {
-  res.json('You got the private route');
-});
 const authorizeUser = asyncHandler(async (req, res) => {
   try {
     const activationCode = req.params.code;
@@ -180,6 +198,5 @@ module.exports = {
   loginUser,
   deleteUser,
   updateUser,
-  getAuth,
   updatePhoto,
 };
