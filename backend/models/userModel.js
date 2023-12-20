@@ -9,9 +9,6 @@ const userSchema = mongoose.Schema(
       type: String,
       required: [true, 'Please add a last name'],
     },
-    photo: {
-      type: String,
-    },
     email: {
       type: String,
       required: [true, 'Please add an email'],
@@ -33,7 +30,7 @@ const userSchema = mongoose.Schema(
       required: true,
     },
     photo: {
-      type: Buffer,
+      type: Object,
       required: false,
     },
   },

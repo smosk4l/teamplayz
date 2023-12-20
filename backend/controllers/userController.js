@@ -5,6 +5,8 @@ const generateToken = require('../config/getToken');
 const sendEmail = require('../middleware/sendEmailAPI');
 const uuid = require('uuid');
 const Joi = require('joi');
+const multer = require('multer');
+const update = require('../middleware/upload');
 
 // Joi schema for user registration
 const registerUserSchema = Joi.object({
@@ -12,21 +14,28 @@ const registerUserSchema = Joi.object({
   lastName: Joi.string().required(),
   email: Joi.string().email().required(),
   password: Joi.string().required(),
+  photo: Joi.string().optional(),
 });
+const storage = multer.memoryStorage();
+const upload = multer({ storage: storage });
 
 const updatePhoto = asyncHandler(async (req, res) => {
   try {
     const { userId, name } = req.body;
     const photo = req.file;
+    console.log(req.file);
 
-    const photoData = photo.buffer;
+    if (!photo) {
+      return res.status(400).json({ error: 'No file uploaded' });
+    }
+
     const user = await User.findById(userId);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
 
-    user.photo = photoData;
+    user.photo = photo.buffer;
     user.firstName = name || user.firstName;
 
     await user.save();
@@ -41,12 +50,17 @@ const updatePhoto = asyncHandler(async (req, res) => {
 const registerUser = asyncHandler(async (req, res) => {
   try {
     // Validate request body using Joi schema
-    const validationResult = registerUserSchema.validate(req.body, { abortEarly: false });
+    const validationResult = registerUserSchema.validate(req.body, {
+      abortEarly: false,
+    });
     if (validationResult.error) {
-      return res.status(400).json({ message: 'Validation error', errors: validationResult.error.details });
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: validationResult.error.details,
+      });
     }
 
-    const { firstName, lastName, email, password } = req.body;
+    const { firstName, lastName, email, password, photo } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -59,26 +73,30 @@ const registerUser = asyncHandler(async (req, res) => {
 
     const activationCode = uuid.v4();
 
-    const user = await User.create({
+    const user = new User({
       firstName,
       lastName,
       email,
       password: hashedPassword,
       activationCode,
-      photo: undefined,
+      photo,
     });
 
-    if (user) {
-      const emailResult = await sendEmail(email);
-      return res.status(201).json({
-        _id: user._id,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        email: user.email,
-      });
-    } else {
-      return res.status(400).json({ error: 'Invalid User Data' });
+    if (req.file) {
+      // Handle user photo upload
+      user.photo = req.file.buffer;
     }
+
+    await user.save();
+
+    const emailResult = await sendEmail(email);
+    return res.status(201).json({
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      photo: user.photo, // Include photo in the response if needed
+    });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal Server Error' });
@@ -130,8 +148,10 @@ const deleteUser = asyncHandler(async (req, res) => {
 });
 
 const updateUser = asyncHandler(async (req, res) => {
+  console.log(req);
   const { firstName, lastName, email } = req.body;
   const user = await User.findOne({ email });
+  console.log(req.file);
 
   if (user) {
     user.firstName = firstName || user.firstName;
