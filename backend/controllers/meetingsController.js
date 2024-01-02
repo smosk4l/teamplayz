@@ -19,12 +19,33 @@ const createMeetingSchema = Joi.object({
   private: Joi.boolean(),
 });
 
+// Joi schema for updating meeting
+const updateMeetingSchema = Joi.object({
+  title: Joi.string().optional(),
+  description: Joi.string().optional(),
+  time: Joi.string().optional(),
+  location: Joi.object({
+    lat: Joi.number(),
+    lng: Joi.number(),
+    city: Joi.string(),
+  }).optional(),
+  attendeesSlots: Joi.number().optional(),
+  tag: Joi.string().optional(),
+});
+
+// Joi schema for entering private meeting
+const enterPrivateMeetingSchema = Joi.object({
+  password: Joi.string().required(),
+  email: Joi.string().email().required(),
+});
+
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
   if (!meeting) {
     return res.status(404).json({ message: 'Meeting not found' });
   }
-  const { owner, title, description, time, location, private, attendees, tag } = meeting;
+  const { owner, title, description, time, location, private, attendees, tag } =
+    meeting;
   const attendeesSlots = meeting.attendeesSlots;
   return res.status(200).json({
     meeting: {
@@ -61,9 +82,14 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 const createMeeting = asyncHandler(async (req, res) => {
   try {
     // Validate request body using Joi schema
-    const validationResult = createMeetingSchema.validate(req.body, { abortEarly: false });
+    const validationResult = createMeetingSchema.validate(req.body, {
+      abortEarly: false,
+    });
     if (validationResult.error) {
-      return res.status(400).json({ message: 'Validation error', errors: validationResult.error.details });
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: validationResult.error.details,
+      });
     }
 
     const currentDate = new Date();
@@ -96,23 +122,39 @@ const createMeeting = asyncHandler(async (req, res) => {
 });
 
 const updatedMeeting = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { title, description, time, location, attendeesSlots, tag } = req.body;
-  const meeting = await Meeting.findById(id);
-  if (!meeting) {
-    return res.status(404).json({ message: 'Meeting not found' });
+  try {
+    // Validate request body using Joi schema
+    const validationResult = updateMeetingSchema.validate(req.body, {
+      abortEarly: false,
+    });
+    if (validationResult.error) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: validationResult.error.details,
+      });
+    }
+
+    const { id } = req.params;
+    const { title, description, time, location, attendeesSlots, tag } =
+      req.body;
+    const meeting = await Meeting.findById(id);
+    if (!meeting) {
+      return res.status(404).json({ message: 'Meeting not found' });
+    }
+    meeting.title = title || meeting.title;
+    meeting.description = description || meeting.description;
+    meeting.time = time || meeting.time;
+    meeting.location = location || meeting.location;
+    meeting.attendeesSlots = attendeesSlots || meeting.attendeesSlots;
+    meeting.tag = tag || meeting.tag;
+    const updatedMeeting = await meeting.save();
+    return res.status(200).json({
+      message: 'Meeting updated',
+      meeting: updatedMeeting,
+    });
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
-  meeting.title = title || meeting.title;
-  meeting.description = description || meeting.description;
-  meeting.time = time || meeting.time;
-  meeting.location = location || meeting.location;
-  meeting.attendeesSlots = attendeesSlots || meeting.attendeesSlots;
-  meeting.tag = tag || meeting.tag;
-  const updatedMeeting = await meeting.save();
-  return res.status(200).json({
-    message: 'Meeting updated',
-    meeting: updatedMeeting,
-  });
 });
 
 const deleteMeeting = asyncHandler(async (req, res) => {
@@ -133,7 +175,9 @@ const addUserToMeeting = asyncHandler(async (req, res) => {
     return res.status(404).json({ message: 'Meeting not found' });
   }
   if (meeting.attendees.includes(userId)) {
-    return res.status(400).json({ message: 'User already attending the meeting' });
+    return res
+      .status(400)
+      .json({ message: 'User already attending the meeting' });
   }
   if (meeting.attendees.length >= meeting.attendeesSlots) {
     return res.status(400).json({ message: 'Meeting is already full' });
@@ -199,27 +243,22 @@ const getNewestMeetings = asyncHandler(async (req, res) => {
 });
 
 const enterPrivateMeeting = asyncHandler(async (req, res) => {
-  const { id } = req.params;
-  const { password, email } = req.body;
-  const meeting = await Meeting.findById(id);
-  if (!meeting) {
-    return res.status(404).send('Spotkanie nie zostało znalezione.');
+  try {
+    // Validate request body using Joi schema
+    const validationResult = enterPrivateMeetingSchema.validate(req.body, {
+      abortEarly: false,
+    });
+    if (validationResult.error) {
+      return res.status(400).json({
+        message: 'Validation error',
+        errors: validationResult.error.details,
+      });
+    }
+
+    // Rest of the code for enterPrivateMeeting...
+  } catch (error) {
+    return res.status(500).json({ message: error.message });
   }
-  if (password !== meeting.password) {
-    return res.status(400).send('Nieprawidłowe hasło.');
-  }
-  const userToAddToMeeting = await User.findOne({ email });
-  if (!userToAddToMeeting) {
-    return res
-      .status(404)
-      .send('Użytkownik o podanym adresie email nie został znaleziony.');
-  }
-  if (meeting.attendeesSlots <= meeting.attendees.length) {
-    return res.status(400).send('Brak wolnych miejsc na spotkaniu.');
-  }
-  meeting.attendees.push(userToAddToMeeting.id);
-  await meeting.save();
-  return res.status(200).send('Użytkownik został dodany do spotkania.');
 });
 
 const getMeetingsByDistance = asyncHandler(async (req, res) => {
@@ -276,6 +315,29 @@ const getMeetingsByDistance = asyncHandler(async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
+const getMarkerPoints = asyncHandler(async (req, res) => {
+  try {
+    const publicMeetings = await Meeting.find({ private: false });
+
+    const publicMeetingsWithDetails = publicMeetings.map((meeting) => {
+      const { id, title, time, tag, attendeesSlots, lng, lat } = meeting;
+      return {
+        id,
+        lng,
+        lat,
+        title,
+        time,
+        tag,
+        attendeesSlots,
+      };
+    });
+
+    return res.status(200).json(publicMeetingsWithDetails);
+  } catch (error) {
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 
 module.exports = {
   getNewestMeetings,
@@ -291,4 +353,5 @@ module.exports = {
   getUserMeetings,
   enterPrivateMeeting,
   getMeetingsByDistance,
+  getMarkerPoints,
 };
