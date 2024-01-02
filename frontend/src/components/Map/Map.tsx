@@ -8,7 +8,6 @@ const Map: React.FC = () => {
   });
 
   const [markerPosition, setMarkerPosition] = useState<any>(null);
-  console.log(markerPosition);
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
     if (!event.latLng) return;
