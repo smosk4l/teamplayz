@@ -2,7 +2,7 @@ const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../config/getToken');
-const sendEmail = require('../middleware/sendEmailAPI');
+const sendEmail = require('../middleware/sendEmail');
 const uuid = require('uuid');
 const Joi = require('joi');
 const multer = require('multer');
@@ -15,6 +15,7 @@ const registerUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   photo: Joi.string().optional(),
+  dateOfBirth: Joi.string().optional(),
 });
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -60,7 +61,8 @@ const registerUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const { firstName, lastName, email, password, photo } = req.body;
+    const { firstName, lastName, email, password, photo, dateOfBirth } =
+      req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -80,6 +82,7 @@ const registerUser = asyncHandler(async (req, res) => {
       password: hashedPassword,
       activationCode,
       photo,
+      dateOfBirth,
     });
 
     if (req.file) {
@@ -89,7 +92,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     await user.save();
 
-    const emailResult = await sendEmail(email);
+    const emailResult = await sendEmail(email, activationCode);
     return res.status(201).json({
       _id: user._id,
       firstName: user.firstName,

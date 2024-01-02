@@ -3,13 +3,12 @@ const Meeting = require('../models/meetingModel');
 const User = require('../models/userModel');
 const geolib = require('geolib');
 const Joi = require('joi');
-
-// Joi schema for meeting creation
 const createMeetingSchema = Joi.object({
   owner: Joi.string().required(),
   title: Joi.string().required(),
   description: Joi.string().required(),
   time: Joi.string().required(),
+  date: Joi.date().required(),
   password: Joi.string(),
   attendeesSlots: Joi.number().required(),
   tag: Joi.string().required(),
@@ -17,23 +16,23 @@ const createMeetingSchema = Joi.object({
   lng: Joi.number().required(),
   city: Joi.string().required(),
   private: Joi.boolean(),
+  duration: Joi.number().required(),
+  status: Joi.any()
 });
 
-// Joi schema for updating meeting
 const updateMeetingSchema = Joi.object({
   title: Joi.string().optional(),
   description: Joi.string().optional(),
   time: Joi.string().optional(),
-  location: Joi.object({
-    lat: Joi.number(),
-    lng: Joi.number(),
-    city: Joi.string(),
-  }).optional(),
+  date: Joi.date().required(),
   attendeesSlots: Joi.number().optional(),
   tag: Joi.string().optional(),
+  lat: Joi.number().required(),
+  lng: Joi.number().required(),
+  city: Joi.string().required(),
+  private : Joi.boolean().required(),
 });
 
-// Joi schema for entering private meeting
 const enterPrivateMeetingSchema = Joi.object({
   password: Joi.string().required(),
   email: Joi.string().email().required(),
@@ -92,9 +91,9 @@ const createMeeting = asyncHandler(async (req, res) => {
       });
     }
 
-    const currentDate = new Date();
-    const timeString = currentDate.toLocaleTimeString();
-    req.body.time = timeString;
+    // const currentDate = new Date();
+    // const timeString = currentDate.toLocaleTimeString();
+    // req.body.time = timeString;
 
     const meeting = new Meeting({
       owner: req.body.owner,
@@ -102,6 +101,9 @@ const createMeeting = asyncHandler(async (req, res) => {
       tag: req.body.tag,
       description: req.body.description,
       time: req.body.time,
+      date: req.body.date,
+      duration: req.body.duration,
+      status: req.body.status,
       password: req.body.password,
       attendees: [req.body.owner],
       private: req.body.private,
@@ -135,7 +137,7 @@ const updatedMeeting = asyncHandler(async (req, res) => {
     }
 
     const { id } = req.params;
-    const { title, description, time, location, attendeesSlots, tag } =
+    const { title, description, date, time, duration, private, attendeesSlots, tag, lng, lat, city  } =
       req.body;
     const meeting = await Meeting.findById(id);
     if (!meeting) {
@@ -147,6 +149,12 @@ const updatedMeeting = asyncHandler(async (req, res) => {
     meeting.location = location || meeting.location;
     meeting.attendeesSlots = attendeesSlots || meeting.attendeesSlots;
     meeting.tag = tag || meeting.tag;
+    meeting.date = date || meeting.date;
+    meeting.duration = duration || meeting.duration;
+    meeting.private = private || meeting.private;
+    meeting.lng = lng || meeting.lng;
+    meeting.lat = lat || meeting.lat;
+    meeting.city = city || meeting.city;
     const updatedMeeting = await meeting.save();
     return res.status(200).json({
       message: 'Meeting updated',
@@ -337,7 +345,6 @@ const getMarkerPoints = asyncHandler(async (req, res) => {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 module.exports = {
   getNewestMeetings,
