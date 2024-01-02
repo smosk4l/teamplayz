@@ -25,15 +25,14 @@ function MeetingList() {
   return (
     <>
       <Navbar />
-      {/* List of meetings */}
-      <div className="absolute left-0 top-0 flex h-full w-screen flex-row-reverse gap-6">
-        <Map />
-        <div className="h-screen w-2/5 overflow-auto">
+      <div className="absolute left-0 top-0 translate-y-20 flex  w-screen lxx:flex-row-reverse gap-6 flex-col h-[90%]">
+        <Map showSearch={false} />
+        <div className="h-full w-full xl:w-2/5 overflow-auto">
           {meetings.map((meeting) => (
             <MeetingItem
               link={'/meetings/' + meeting._id}
               id={meeting._id}
-              key={crypto.randomUUID()}
+              key={meeting._id}
               title={meeting.title}
               tag={meeting.tag}
               location={meeting.location}

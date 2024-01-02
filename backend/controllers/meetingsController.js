@@ -338,7 +338,6 @@ const getMarkerPoints = asyncHandler(async (req, res) => {
   }
 });
 
-
 module.exports = {
   getNewestMeetings,
   getAllMeetings,
