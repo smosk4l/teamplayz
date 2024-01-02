@@ -25,7 +25,7 @@ function MeetingItem({
   turnLikeIcon,
 }: MeetingItemProps) {
   return (
-    <div className="mx-6  mt-4 max-w-[600px] xl:mr-auto">
+    <div className="mx-6 mt-4 max-w-[600px] xl:mr-auto">
       <Link to={link}>
         <div className="relative my-2 rounded-xl border bg-white px-6 py-4 shadow-sm">
           <ul>

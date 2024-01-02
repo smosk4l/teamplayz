@@ -2,6 +2,7 @@ const asyncHandler = require('express-async-handler');
 const Meeting = require('../models/meetingModel');
 const User = require('../models/userModel');
 const geolib = require('geolib');
+
 const getSingleMeeting = asyncHandler(async (req, res) => {
   const meeting = await Meeting.findById(req.params.id);
   if (!meeting) {
@@ -61,7 +62,6 @@ const createMeeting = asyncHandler(async (req, res) => {
     !title ||
     !description ||
     !time ||
-    !lat ||
     !attendeesSlots ||
     !tag ||
     !lng ||

@@ -7,4 +7,5 @@ export const messages = {
   acceptTerms: 'Proszę zaakceptować regulamin',
   createMeetingError: 'Nie udało się stworzyć spotkania',
   createMeeting: 'Spotkanie stworzone',
+  max50: 'Maksymalnie 50 znaków',
 };
