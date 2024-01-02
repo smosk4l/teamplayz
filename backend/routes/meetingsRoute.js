@@ -14,6 +14,7 @@ const {
   getMeetingsByOwner,
   getUserMeetings,
   enterPrivateMeeting,
+  getMarkerPoints,
 } = require('../controllers/meetingsController');
 
 router.get('/', getAllMeetings);
@@ -28,5 +29,7 @@ router.put('/:id', updatedMeeting);
 router.delete('/:id', deleteMeeting);
 router.get('/:id/attendees', getAttendeesOfMeeting);
 router.post('/:id/addUser', addUserToMeeting);
+router.get('/marker/points', getMarkerPoints);
+// router.post('/pushNotification', pushNotification);
 
 module.exports = router;
