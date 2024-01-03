@@ -1,21 +1,27 @@
 const jwt = require('jsonwebtoken');
 
-const checkAuth = (req, res, next) => {
-  const token = req.cookies.access_token;
-  if (!token) {
-    return res.status(401).json('No token found');
-  }
+const checkAuth = async (req, res, next) => {
+  try {
+    const token = req.cookies.access_token;
 
-  jwt.verify(token, process.env.JWT_SECRET, (err, userId) => {
-    if (err) {
-      return res.status(403).json('Invalid Token');
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized: Missing token' });
     }
 
-    req.user = {
-      id: userId,
-    };
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    req.user = decoded;
     next();
-  });
+  } catch (error) {
+    if (
+      error.name === 'JsonWebTokenError' ||
+      error.name === 'TokenExpiredError'
+    ) {
+      return res.status(401).json({ message: 'Unauthorized: Invalid token' });
+    } else {
+      console.error(error);
+      return res.status(500).json({ message: 'Internal Server Error' });
+    }
+  }
 };
 
 module.exports = {

@@ -3,10 +3,12 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../config/getToken');
 const sendEmail = require('../middleware/sendEmail');
+const { checkAuth } = require('../middleware/checkAuth');
 const uuid = require('uuid');
 const Joi = require('joi');
 const multer = require('multer');
 const update = require('../middleware/upload');
+const { first } = require('lodash');
 
 // Joi schema for user registration
 const registerUserSchema = Joi.object({
@@ -114,7 +116,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     if (user.isAuthorized) {
       const token = generateToken(user._id);
-
+      console.log(token);
       return res
         .cookie('access_token', token, {
           httpOnly: true,
@@ -139,39 +141,65 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-const deleteUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+const deleteUser = async (req, res) => {
+  try {
+    const userIdFromToken = req.user.userId;
+    const user = await User.findById(userIdFromToken);
 
-  if (user) {
-    await user.deleteOne();
-    return res.json({ message: 'User deleted' });
-  } else {
-    return res.status(404).json({ error: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await User.deleteOne({ _id: userIdFromToken });
+
+    return res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
-});
+};
+
 
 const updateUser = asyncHandler(async (req, res) => {
-  console.log(req);
-  const { firstName, lastName, email } = req.body;
-  const user = await User.findOne({ email });
-  console.log(req.file);
+  try {
+    const { email, firstName, lastName } = req.body;
+    const userIdFromToken = req.user.userId;
 
-  if (user) {
+    const user = await User.findById(userIdFromToken);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.email !== email) {
+      return res.status(403).json({
+        message: 'Forbidden: You are not allowed to update other users',
+      });
+    }
+
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
+    user.email = email || user.email;
 
     const updatedUser = await user.save();
 
-    return res.json({
+    return res.status(201).json({
       _id: updatedUser._id,
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName,
       email: updatedUser.email,
     });
-  } else {
-    return res.status(404).json({ error: 'User not found' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
+
+
+
+
+
+
 
 const authorizeUser = asyncHandler(async (req, res) => {
   try {
