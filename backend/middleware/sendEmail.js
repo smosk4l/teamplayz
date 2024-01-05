@@ -15,7 +15,7 @@ async function sendMail(email, activationCode) {
   await transporter.sendMail({
     from: '"Teamplayz" <f:teamplayzverify@gmail.com>',
     to: `${email}`,
-    subject: 'Witaj w drużynie!',
+    subject: 'CHUJ CI W DUPE!',
     text: `Aby potwierdzić swoje konto, kliknij w link poniżej: http://localhost:8000/api/users/activate/${activationCode}`,
   });
 }

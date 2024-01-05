@@ -9,7 +9,7 @@ const createMeetingSchema = Joi.object({
   description: Joi.string().required(),
   time: Joi.string().required(),
   date: Joi.date().required(),
-  password: Joi.string(),
+  password: Joi.string().required().allow(''),
   attendeesSlots: Joi.number().required(),
   tag: Joi.string().required(),
   lat: Joi.number().required(),
@@ -17,7 +17,6 @@ const createMeetingSchema = Joi.object({
   city: Joi.string().required(),
   private: Joi.boolean(),
   duration: Joi.number().required(),
-  status: Joi.any()
 });
 
 const updateMeetingSchema = Joi.object({
@@ -30,7 +29,7 @@ const updateMeetingSchema = Joi.object({
   lat: Joi.number().required(),
   lng: Joi.number().required(),
   city: Joi.string().required(),
-  private : Joi.boolean().required(),
+  private: Joi.boolean().required(),
 });
 
 const enterPrivateMeetingSchema = Joi.object({
@@ -103,8 +102,7 @@ const createMeeting = asyncHandler(async (req, res) => {
       time: req.body.time,
       date: req.body.date,
       duration: req.body.duration,
-      status: req.body.status,
-      password: req.body.password,
+      password: req.body.password || '',
       attendees: [req.body.owner],
       private: req.body.private,
       attendeesSlots: req.body.attendeesSlots,
@@ -137,8 +135,19 @@ const updatedMeeting = asyncHandler(async (req, res) => {
     }
 
     const { id } = req.params;
-    const { title, description, date, time, duration, private, attendeesSlots, tag, lng, lat, city  } =
-      req.body;
+    const {
+      title,
+      description,
+      date,
+      time,
+      duration,
+      private,
+      attendeesSlots,
+      tag,
+      lng,
+      lat,
+      city,
+    } = req.body;
     const meeting = await Meeting.findById(id);
     if (!meeting) {
       return res.status(404).json({ message: 'Meeting not found' });

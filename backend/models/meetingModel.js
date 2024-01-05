@@ -27,11 +27,6 @@ const meetingSchema = mongoose.Schema(
       type: Number,
       required: true,
     },
-    status: {
-      type: String,
-      enum: ['planowane', 'w trakcie', 'zakonczone'],
-      default: 'planowane',
-    },
     time: {
       type: String,
       required: true,

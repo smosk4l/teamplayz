@@ -22,6 +22,33 @@ const registerUserSchema = Joi.object({
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
+const getUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.body.id);
+    console.log(req.body.id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Customize the data you want to send in the response
+    const userData = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      photo: user.photo, // Include photo if needed
+      dateOfBirth: user.dateOfBirth, // Include date of birth if needed
+      // Add any other fields you want to include in the response
+    };
+
+    return res.status(200).json(userData);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
 const updatePhoto = asyncHandler(async (req, res) => {
   try {
     const { userId, name } = req.body;
@@ -85,6 +112,7 @@ const registerUser = asyncHandler(async (req, res) => {
       activationCode,
       photo,
       dateOfBirth,
+      // resetPasswordCode,
     });
 
     if (req.file) {
@@ -141,13 +169,20 @@ const loginUser = asyncHandler(async (req, res) => {
   }
 });
 
-const deleteUser = async (req, res) => {
+const deleteUser = asyncHandler(async (req, res) => {
   try {
     const userIdFromToken = req.user.userId;
     const user = await User.findById(userIdFromToken);
 
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the authenticated user is the owner of the resource
+    if (user._id.toString() !== req.params.id) {
+      return res.status(403).json({
+        message: 'Forbidden: You are not allowed to delete other users',
+      });
     }
 
     await User.deleteOne({ _id: userIdFromToken });
@@ -157,8 +192,7 @@ const deleteUser = async (req, res) => {
     console.error(error);
     return res.status(500).json({ message: 'Internal Server Error' });
   }
-};
-
+});
 
 const updateUser = asyncHandler(async (req, res) => {
   try {
@@ -195,12 +229,6 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
-
-
-
-
-
-
 const authorizeUser = asyncHandler(async (req, res) => {
   try {
     const activationCode = req.params.code;
@@ -220,7 +248,18 @@ const authorizeUser = asyncHandler(async (req, res) => {
   }
 });
 
+// const passwordReset = asyncHandler(async (req, res) => {
+//   try{
+//   const {email} = req.body;
+//   const user = await User.findOne({email});
+//   if(!user){
+//     return res.status(404).send('Nie zanleziono uytkownika o takim adresie e-mail')
+//   } catch (error){
+//     return res.status(400).send("Wystąpił błąd serwera")
+//   }
+
 module.exports = {
+  getUser,
   authorizeUser,
   registerUser,
   loginUser,
