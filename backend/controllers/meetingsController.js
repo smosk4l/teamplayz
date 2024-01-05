@@ -17,6 +17,8 @@ const createMeetingSchema = Joi.object({
   lng: Joi.number().required(),
   city: Joi.string().required(),
   private: Joi.boolean(),
+  isPrivate: Joi.boolean(),
+  attendees: Joi.array().items(Joi.string()),
 });
 
 // Joi schema for updating meeting
@@ -92,9 +94,9 @@ const createMeeting = asyncHandler(async (req, res) => {
       });
     }
 
-    const currentDate = new Date();
-    const timeString = currentDate.toLocaleTimeString();
-    req.body.time = timeString;
+    // const currentDate = new Date();
+    // const timeString = currentDate.toLocaleTimeString();
+    // req.body.time = timeString;
 
     const meeting = new Meeting({
       owner: req.body.owner,
@@ -102,7 +104,7 @@ const createMeeting = asyncHandler(async (req, res) => {
       tag: req.body.tag,
       description: req.body.description,
       time: req.body.time,
-      password: req.body.password,
+      password: req.body.password || '',
       attendees: [req.body.owner],
       private: req.body.private,
       attendeesSlots: req.body.attendeesSlots,

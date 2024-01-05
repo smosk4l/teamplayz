@@ -1,11 +1,10 @@
-import React, {
-  useState,
-  useRef,
-  useEffect,
-  Dispatch,
-  SetStateAction,
-} from 'react';
-import { GoogleMap, useJsApiLoader, Marker } from '@react-google-maps/api';
+import React, { useState, useRef, useEffect } from 'react';
+import {
+  GoogleMap,
+  useJsApiLoader,
+  MarkerF,
+  InfoWindow,
+} from '@react-google-maps/api';
 import { useFormikContext } from 'formik';
 
 declare global {
@@ -16,16 +15,30 @@ declare global {
   }
 }
 
-type MapProps = {
-  showSearch?: boolean;
+type MarkerType = {
+  lat: number;
+  lng: number;
 };
 
-const Map = ({ showSearch = true }: MapProps) => {
+type MapProps = {
+  showSearch?: boolean;
+  markers?: MarkerType[];
+  canSetMarker?: boolean;
+};
+
+const libraries = [import.meta.env.VITE_LIBRARY];
+
+const Map = ({
+  markers,
+  showSearch = true,
+  canSetMarker = false,
+}: MapProps) => {
   const { setFieldValue, values } = useFormikContext() || {};
+
   const { isLoaded } = useJsApiLoader({
     id: 'google-map-script',
     googleMapsApiKey: import.meta.env.VITE_GOOGLE_MAPS_API_KEY || '',
-    libraries: ['places'],
+    libraries,
   });
 
   const [markerPosition, setMarkerPosition] =
@@ -38,6 +51,8 @@ const Map = ({ showSearch = true }: MapProps) => {
   const inputRef = useRef<HTMLInputElement | null>(null);
 
   const handleMapClick = (event: google.maps.MapMouseEvent) => {
+    if (!canSetMarker) return;
+
     const { latLng } = event;
     if (!latLng) return;
 
@@ -50,6 +65,8 @@ const Map = ({ showSearch = true }: MapProps) => {
     setFieldValue('lat', lat);
     setFieldValue('lng', lng);
   };
+
+  const [selectedMarker, setSelectedMarker] = useState<MarkerType | null>(null);
 
   useEffect(() => {
     if (isLoaded && inputRef.current && showSearch) {
@@ -78,7 +95,7 @@ const Map = ({ showSearch = true }: MapProps) => {
           ref={inputRef}
           type="text"
           placeholder="Search..."
-          style={{ width: '100%', height: '40px' }}
+          style={{ width: '100%', height: '40px', zIndex: '999999' }}
         />
       )}
       <GoogleMap
@@ -87,7 +104,22 @@ const Map = ({ showSearch = true }: MapProps) => {
         mapContainerStyle={{ width: '100%', height: '100%' }}
         onClick={handleMapClick}
       >
-        {markerPosition && <Marker position={markerPosition} />}
+        {markerPosition && <MarkerF position={markerPosition} />}
+        {markers?.map((marker, index) => (
+          <MarkerF
+            key={index}
+            position={marker}
+            onMouseOver={() => setSelectedMarker(marker)}
+            onMouseOut={() => setSelectedMarker(null)}
+          />
+        ))}
+        {selectedMarker && (
+          <InfoWindow position={selectedMarker}>
+            <div>
+              Lat: {selectedMarker.lat}, Lng: {selectedMarker.lng}
+            </div>
+          </InfoWindow>
+        )}
       </GoogleMap>
     </>
   );

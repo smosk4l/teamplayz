@@ -9,3 +9,5 @@ export const messages = {
   createMeeting: 'Spotkanie stworzone',
   max50: 'Maksymalnie 50 znaków',
 };
+
+const MAX_MEETING_DURATION = 24 * 60 * 60 * 1000;

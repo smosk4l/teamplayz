@@ -22,11 +22,17 @@ function MeetingList() {
     fetchData();
   }, []);
 
+  const exampleMarkers = [
+    { lat: 50.049683, lng: 19.944544 },
+    { lat: 50.059683, lng: 19.954544 },
+    { lat: 50.069683, lng: 19.964544 },
+  ];
+
   return (
     <>
       <Navbar />
       <div className="absolute left-0 top-0 translate-y-20 flex  w-screen lxx:flex-row-reverse gap-6 flex-col h-[90%]">
-        <Map showSearch={false} />
+        <Map showSearch={false} markers={exampleMarkers} />
         <div className="h-full w-full xl:w-2/5 overflow-auto">
           {meetings.map((meeting) => (
             <MeetingItem
