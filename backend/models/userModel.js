@@ -25,9 +25,8 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    coordinates: {
-      type: [Number], // tablica dwóch liczb (longitude, latitude)
-      required: true,
+    resetPassworCode :{
+      type:String
     },
     photo: {
       type: Object,

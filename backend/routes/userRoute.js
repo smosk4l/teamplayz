@@ -9,14 +9,17 @@ const {
   deleteUser,
   updateUser,
   updatePhoto,
+  getUser,
 } = require('../controllers/userController.js');
+const { check } = require('yargs');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+router.get('/', getUser),
 router.post('/', registerUser);
 router.post('/login', loginUser);
 router.get('/getAuth', checkAuth);
-router.route('/:id').put(updateUser).delete(deleteUser);
-router.get('/activate/:code', authorizeUser);
+router.post('/activate/:code', authorizeUser);
 router.post('/image/add', upload.single('photo'), updatePhoto);
-router.put('/update/profile', updateUser);
+router.put('/:id', checkAuth, updateUser);
+router.delete('/:id', checkAuth, deleteUser);
 module.exports = router;

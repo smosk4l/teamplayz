@@ -17,11 +17,19 @@ const meetingSchema = mongoose.Schema(
       required: true,
       maxlength: 300,
     },
-    time: {
+    date: {
       type: Date,
       required: true,
       min: Date.now(),
       max: '2025-01-01',
+    },
+    duration: {
+      type: Number,
+      required: true,
+    },
+    time: {
+      type: String,
+      required: true,
     },
     password: {
       type: String,
