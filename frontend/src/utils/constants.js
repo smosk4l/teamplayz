@@ -10,4 +10,5 @@ export const messages = {
   max50: 'Maksymalnie 50 znaków',
 };
 
-const MAX_MEETING_DURATION = 24 * 60 * 60 * 1000;
+export const MAX_MEETING_DURATION = 24 * 60 * 60 * 1000;
+export const MAX_MEETINGS_NUMBER_PER_PAGE = 10;

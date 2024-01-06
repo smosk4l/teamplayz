@@ -6,7 +6,11 @@ import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { Form, Formik, ErrorMessage } from 'formik';
-import { emailRegex, messages } from '../../utils/constants';
+import {
+  emailRegex,
+  messages,
+  MAX_MEETING_DURATION,
+} from '../../utils/constants';
 import useAuthState from '../../state/authState';
 import FormHeading from '../UI/Form/FormHeading';
 import Checkbox from '../UI/Form/Checkbox';
@@ -44,7 +48,7 @@ function MeetingForm() {
         duration: durationInMilliseconds,
       })
       .then((response) => {
-        toast.success(messages.createMeetingError);
+        toast.success(messages.createMeeting);
       })
       .catch(() => {
         toast.error(messages.createMeetingError);
@@ -61,7 +65,7 @@ function MeetingForm() {
     tag: '',
     city: '',
     attendeesSlots: 0,
-    isPrivate: false,
+    private: false,
     owner: user.id,
     lat: 0,
     lng: 0,
@@ -71,8 +75,8 @@ function MeetingForm() {
   };
 
   const validationSchema = Yup.object().shape({
-    isPrivate: Yup.boolean(),
-    password: Yup.string().when('isPrivate', {
+    private: Yup.boolean(),
+    password: Yup.string().when('private', {
       is: true,
       then: (schema) =>
         schema
@@ -80,7 +84,7 @@ function MeetingForm() {
           .required(messages.fieldRequired),
       otherwise: (schema) => schema.optional(),
     }),
-    confirmPassword: Yup.string().when('isPrivate', {
+    confirmPassword: Yup.string().when('private', {
       is: true,
       then: (schema) =>
         schema
@@ -269,12 +273,12 @@ function MeetingForm() {
 
                 <Checkbox
                   text={'Private meeting'}
-                  id={'isPrivate'}
-                  isChecked={values.isPrivate}
+                  id={'private'}
+                  isChecked={values.private}
                   handleChange={handleChange}
                 />
 
-                {values.isPrivate && (
+                {values.private && (
                   <>
                     <Input
                       type="password"

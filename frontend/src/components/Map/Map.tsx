@@ -89,12 +89,13 @@ const Map = ({
   if (!isLoaded) return <div>Loading...</div>;
 
   return (
-    <>
+    <div className="flex flex-col w-full h-full">
       {showSearch && (
         <input
           ref={inputRef}
           type="text"
           placeholder="Search..."
+          className="p-4"
           style={{ width: '100%', height: '40px', zIndex: '999999' }}
         />
       )}
@@ -121,7 +122,7 @@ const Map = ({
           </InfoWindow>
         )}
       </GoogleMap>
-    </>
+    </div>
   );
 };
 
