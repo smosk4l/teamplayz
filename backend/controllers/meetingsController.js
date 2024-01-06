@@ -2,7 +2,9 @@ const asyncHandler = require('express-async-handler');
 const Meeting = require('../models/meetingModel');
 const User = require('../models/userModel');
 const geolib = require('geolib');
+const jwt = require('jsonwebtoken');
 const Joi = require('joi');
+const { checkAuth } = require('../middleware/checkAuth');
 const createMeetingSchema = Joi.object({
   owner: Joi.string().required(),
   title: Joi.string().required(),
@@ -38,27 +40,125 @@ const enterPrivateMeetingSchema = Joi.object({
 });
 
 const getSingleMeeting = asyncHandler(async (req, res) => {
-  const meeting = await Meeting.findById(req.params.id);
-  if (!meeting) {
-    return res.status(404).json({ message: 'Meeting not found' });
-  }
-  const { owner, title, description, time, location, private, attendees, tag } =
-    meeting;
-  const attendeesSlots = meeting.attendeesSlots;
-  return res.status(200).json({
-    meeting: {
-      tag,
+  try {
+    const meeting = await Meeting.findById(req.params.id);
+
+    if (!meeting) {
+      return res.status(404).json({ message: 'Meeting not found' });
+    }
+
+    const {
       owner,
       title,
       description,
       time,
+      location,
       private,
+      attendees,
+      tag,
+    } = meeting;
+    const attendeesSlots = meeting.attendeesSlots;
+
+    if (!private) {
+      return res.status(200).json({
+        meeting: {
+          tag,
+          owner,
+          title,
+          description,
+          time,
+          private,
+          location,
+          attendees,
+          attendeesSlots,
+        },
+      });
+    }
+
+    // Spotkanie jest prywatne, sprawdź dostęp
+    const token = req.cookies.access_token;
+
+    if (!token) {
+      return res.status(401).json({ message: 'Unauthorized: Missing token' });
+    }
+
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+
+    // Sprawdź, czy użytkownik jest na liście uczestników spotkania
+    if (attendees.includes(decoded.userId)) {
+      return res.status(200).json({
+        meeting: {
+          tag,
+          owner,
+          title,
+          description,
+          time,
+          private,
+          location,
+          attendees,
+          attendeesSlots,
+        },
+      });
+    } else {
+      return res.status(401).json({
+        message: 'Unauthorized: You do not have access to this private meeting',
+      });
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+});
+const getPrivateMeeting = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { password } = req.body;
+    const userIdFromToken = req.user.userId; // Pobieranie userId z tokenu za pomocą funkcji checkAuth
+
+    const meeting = await Meeting.findById(id);
+
+    if (!meeting) {
+      return res.status(404).json({ message: 'Meeting not found' });
+    }
+
+    if (!meeting.private) {
+      return res.status(400).json({ message: 'This meeting is not private' });
+    }
+
+    if (meeting.password !== password) {
+      return res
+        .status(401)
+        .json({ message: 'Unauthorized: Incorrect password' });
+    }
+
+    const {
+      owner,
+      title,
+      description,
+      time,
       location,
       attendees,
+      tag,
       attendeesSlots,
-    },
-  });
-});
+    } = meeting;
+
+    return res.status(200).json({
+      meeting: {
+        tag,
+        owner,
+        title,
+        description,
+        time,
+        location,
+        attendees,
+        attendeesSlots,
+      },
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
+  }
+};
 
 // const getPublicMeetings = asyncHandler(async (req, res) => {
 //   const { page = 1, limit = 10 } = req.query;
@@ -109,9 +209,9 @@ const createMeeting = asyncHandler(async (req, res) => {
       });
     }
 
-    const currentDate = new Date();
-    const timeString = currentDate.toLocaleTimeString();
-    req.body.time = timeString;
+    // const currentDate = new Date();
+    // const timeString = currentDate.toLocaleTimeString();
+    // req.body.time = timeString;
 
     const meeting = new Meeting({
       owner: req.body.owner,
@@ -375,6 +475,7 @@ const getMarkerPoints = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getPrivateMeeting,
   getNewestMeetings,
   getAllMeetings,
   getPublicMeetings,

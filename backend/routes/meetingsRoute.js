@@ -5,6 +5,7 @@ const {
   getMeetingsByDistance,
   getAllMeetings,
   getPublicMeetings,
+  getPrivateMeeting,
   getSingleMeeting,
   createMeeting,
   updatedMeeting,
@@ -16,6 +17,7 @@ const {
   enterPrivateMeeting,
   getMarkerPoints,
 } = require('../controllers/meetingsController');
+const { checkAuth } = require('../middleware/checkAuth');
 
 router.get('/', getAllMeetings);
 router.post('/public', getPublicMeetings);
@@ -24,7 +26,8 @@ router.get('/byOwner/:id', getMeetingsByOwner);
 router.get('/userMeetings/:id', getUserMeetings);
 router.post('/createMeeting', createMeeting);
 router.post('/enterPrivateMeeting/:id', enterPrivateMeeting);
-router.get('/:id', getSingleMeeting);
+router.get('/public/single/:id', checkAuth, getSingleMeeting);
+router.post('/private/single/:id', checkAuth, getPrivateMeeting )
 router.put('/:id', updatedMeeting);
 router.delete('/:id', deleteMeeting);
 router.get('/:id/attendees', getAttendeesOfMeeting);
