@@ -2,11 +2,13 @@ const bcrypt = require('bcryptjs');
 const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../config/getToken');
-const sendEmail = require('../middleware/sendEmailAPI');
+const sendEmail = require('../middleware/sendEmail');
+const { checkAuth } = require('../middleware/checkAuth');
 const uuid = require('uuid');
 const Joi = require('joi');
 const multer = require('multer');
 const update = require('../middleware/upload');
+const { first } = require('lodash');
 
 // Joi schema for user registration
 const registerUserSchema = Joi.object({
@@ -15,9 +17,37 @@ const registerUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   photo: Joi.string().optional(),
+  dateOfBirth: Joi.string().optional(),
 });
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
+
+const getUser = asyncHandler(async (req, res) => {
+  try {
+    const user = await User.findById(req.body.id);
+    console.log(req.body.id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Customize the data you want to send in the response
+    const userData = {
+      _id: user._id,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      email: user.email,
+      photo: user.photo, // Include photo if needed
+      dateOfBirth: user.dateOfBirth, // Include date of birth if needed
+      // Add any other fields you want to include in the response
+    };
+
+    return res.status(200).json(userData);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 const updatePhoto = asyncHandler(async (req, res) => {
   try {
@@ -60,7 +90,8 @@ const registerUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const { firstName, lastName, email, password, photo } = req.body;
+    const { firstName, lastName, email, password, photo, dateOfBirth } =
+      req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -80,6 +111,8 @@ const registerUser = asyncHandler(async (req, res) => {
       password: hashedPassword,
       activationCode,
       photo,
+      dateOfBirth,
+      // resetPasswordCode,
     });
 
     if (req.file) {
@@ -89,7 +122,7 @@ const registerUser = asyncHandler(async (req, res) => {
 
     await user.save();
 
-    const emailResult = await sendEmail(email);
+    const emailResult = await sendEmail(email, activationCode);
     return res.status(201).json({
       _id: user._id,
       firstName: user.firstName,
@@ -111,7 +144,7 @@ const loginUser = asyncHandler(async (req, res) => {
   if (user && (await bcrypt.compare(password, user.password))) {
     if (user.isAuthorized) {
       const token = generateToken(user._id);
-
+      console.log(token);
       return res
         .cookie('access_token', token, {
           httpOnly: true,
@@ -137,36 +170,62 @@ const loginUser = asyncHandler(async (req, res) => {
 });
 
 const deleteUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
+  try {
+    const userIdFromToken = req.user.userId;
+    const user = await User.findById(userIdFromToken);
 
-  if (user) {
-    await user.deleteOne();
-    return res.json({ message: 'User deleted' });
-  } else {
-    return res.status(404).json({ error: 'User not found' });
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Check if the authenticated user is the owner of the resource
+    if (user._id.toString() !== req.params.id) {
+      return res.status(403).json({
+        message: 'Forbidden: You are not allowed to delete other users',
+      });
+    }
+
+    await User.deleteOne({ _id: userIdFromToken });
+
+    return res.status(200).json({ message: 'User deleted successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
 const updateUser = asyncHandler(async (req, res) => {
-  console.log(req);
-  const { firstName, lastName, email } = req.body;
-  const user = await User.findOne({ email });
-  console.log(req.file);
+  try {
+    const { email, firstName, lastName } = req.body;
+    const userIdFromToken = req.user.userId;
 
-  if (user) {
+    const user = await User.findById(userIdFromToken);
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    if (user.email !== email) {
+      return res.status(403).json({
+        message: 'Forbidden: You are not allowed to update other users',
+      });
+    }
+
     user.firstName = firstName || user.firstName;
     user.lastName = lastName || user.lastName;
+    user.email = email || user.email;
 
     const updatedUser = await user.save();
 
-    return res.json({
+    return res.status(201).json({
       _id: updatedUser._id,
       firstName: updatedUser.firstName,
       lastName: updatedUser.lastName,
       email: updatedUser.email,
     });
-  } else {
-    return res.status(404).json({ error: 'User not found' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal Server Error' });
   }
 });
 
@@ -189,7 +248,18 @@ const authorizeUser = asyncHandler(async (req, res) => {
   }
 });
 
+// const passwordReset = asyncHandler(async (req, res) => {
+//   try{
+//   const {email} = req.body;
+//   const user = await User.findOne({email});
+//   if(!user){
+//     return res.status(404).send('Nie zanleziono uytkownika o takim adresie e-mail')
+//   } catch (error){
+//     return res.status(400).send("Wystąpił błąd serwera")
+//   }
+
 module.exports = {
+  getUser,
   authorizeUser,
   registerUser,
   loginUser,
