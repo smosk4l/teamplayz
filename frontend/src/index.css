@@ -5,10 +5,16 @@
 @tailwind utilities;
 
 html {
-    font-family: 'Lato';
-    background-color: #f5f6f7;
+  font-family: 'Lato';
+  background-color: #f5f6f7;
 }
 
 .blur-background {
-    @apply bg-opacity-50 blur-3xl backdrop-filter;
+  @apply bg-opacity-50 blur-3xl backdrop-filter;
+}
+
+.pac-container,
+.pac-logo,
+.hdpi {
+  z-index: 9999;
 }

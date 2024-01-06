@@ -5,7 +5,7 @@ import { useState } from 'react';
 import * as Yup from 'yup';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { Form, Formik } from 'formik';
+import { Form, Formik, ErrorMessage } from 'formik';
 import { emailRegex, messages } from '../../utils/constants';
 import useAuthState from '../../state/authState';
 import FormHeading from '../UI/Form/FormHeading';
@@ -14,6 +14,7 @@ import Button from '../UI/Button';
 import Input from '../UI/Form/Input';
 import Map from '../Map/Map';
 import { Modal, Box } from '@mui/material';
+import ErrorLabel from '../UI/Error/ErrorLabel';
 
 function MeetingForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,9 +24,24 @@ function MeetingForm() {
   const handleSubmit = async (values) => {
     setIsLoading(true);
 
+    if (isNaN(Date.parse(values.date))) {
+      toast.error(
+        'Invalid date format for duration. Please use YYYY-MM-DD format.'
+      );
+      setIsLoading(false);
+      return;
+    }
+
+    const [hours, minutes] = values.duration.split(':');
+    const durationInMilliseconds =
+      (Number(hours) * 60 + Number(minutes)) * 60 * 1000;
+
+    const { confirmPassword, ...otherValues } = values;
+
     await axios
       .post('http://localhost:8000/api/meetings/createMeeting', {
-        ...values,
+        ...otherValues,
+        duration: durationInMilliseconds,
       })
       .then((response) => {
         toast.success(messages.createMeetingError);
@@ -41,17 +57,37 @@ function MeetingForm() {
     title: '',
     description: '',
     time: '',
+    date: '',
     tag: '',
     city: '',
-    attendees: [user.id],
     attendeesSlots: 0,
     isPrivate: false,
     owner: user.id,
     lat: 0,
     lng: 0,
+    password: '',
+    confirmPassword: '',
+    duration: null,
   };
 
   const validationSchema = Yup.object().shape({
+    isPrivate: Yup.boolean(),
+    password: Yup.string().when('isPrivate', {
+      is: true,
+      then: (schema) =>
+        schema
+          .oneOf([Yup.ref('confirmPassword'), null], 'Passwords must match')
+          .required(messages.fieldRequired),
+      otherwise: (schema) => schema.optional(),
+    }),
+    confirmPassword: Yup.string().when('isPrivate', {
+      is: true,
+      then: (schema) =>
+        schema
+          .oneOf([Yup.ref('password'), null], 'Passwords must match')
+          .required(messages.fieldRequired),
+      otherwise: (schema) => schema.optional(),
+    }),
     title: Yup.string()
       .required(messages.fieldRequired)
       .max(50, messages.max50),
@@ -63,6 +99,25 @@ function MeetingForm() {
       .required(messages.fieldRequired)
       .min(2, 'Minimum 2 miejsca')
       .max(30, 'Maksymalnie 30 miejsc'),
+    date: Yup.date()
+      .min(new Date(), "Time can't be in the past")
+      .required(messages.fieldRequired),
+    city: Yup.string().required(messages.fieldRequired),
+    lat: Yup.number()
+      .test(
+        'lat',
+        'You have to select a meeting location',
+        (value) => value !== 0
+      )
+      .required(messages.fieldRequired),
+    lng: Yup.number()
+      .test(
+        'lng',
+        'You have to select a meeting location',
+        (value) => value !== 0
+      )
+      .required(messages.fieldRequired),
+    duration: Yup.string().required(messages.fieldRequired),
   });
 
   const handleOpenModal = () => {
@@ -91,6 +146,7 @@ function MeetingForm() {
             onSubmit={handleSubmit}
             className="my-6 flex flex-col items-center"
           >
+            {console.log(errors)}
             {console.log(values)}
 
             <div className="w-full max-w-[500px]">
@@ -117,10 +173,28 @@ function MeetingForm() {
                 <Input
                   type="date"
                   text="Date"
+                  id="date"
+                  name="date"
+                  handleChange={handleChange}
+                  error={errors.date}
+                />
+
+                <Input
+                  type="time"
+                  text="Time"
                   id="time"
                   name="time"
                   handleChange={handleChange}
                   error={errors.time}
+                />
+
+                <Input
+                  type="time"
+                  text="Duration"
+                  id="duration"
+                  name="duration"
+                  handleChange={handleChange}
+                  error={errors.duration}
                 />
 
                 <Input
@@ -129,15 +203,18 @@ function MeetingForm() {
                   id="city"
                   name="city"
                   handleChange={handleChange}
-                  error={errors.location}
+                  error={errors.city}
                 />
                 <Button
                   type="button"
                   onClick={handleOpenModal}
+                  text="Set location"
                   className="text-white rounded-lg bg-blue-500 mt-6 w-full py-2"
-                >
-                  Wybierz lokalizacje
-                </Button>
+                />
+
+                {(errors.lat || errors.lng) && (
+                  <ErrorLabel styles="block my-2" error={errors.lng} />
+                )}
 
                 <Modal
                   open={isModalOpen}
@@ -171,14 +248,13 @@ function MeetingForm() {
                       p: 6,
                     }}
                   >
-                    <Map />
+                    <Map showSearch canSetMarker />
                     <Button
                       variant="contained"
                       color="secondary"
                       onClick={handleCloseModal}
-                    >
-                      Close
-                    </Button>
+                      text="Close"
+                    />
                   </Box>
                 </Modal>
 
@@ -197,6 +273,27 @@ function MeetingForm() {
                   isChecked={values.isPrivate}
                   handleChange={handleChange}
                 />
+
+                {values.isPrivate && (
+                  <>
+                    <Input
+                      type="password"
+                      text="Password"
+                      id="password"
+                      name="password"
+                      handleChange={handleChange}
+                      error={errors.password}
+                    />
+                    <Input
+                      type="password"
+                      text="Confirm Password"
+                      id="confirmPassword"
+                      name="confirmPassword"
+                      handleChange={handleChange}
+                      error={errors.confirmPassword}
+                    />
+                  </>
+                )}
 
                 <Input
                   type="number"

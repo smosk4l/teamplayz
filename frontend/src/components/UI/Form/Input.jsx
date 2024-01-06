@@ -1,3 +1,5 @@
+import ErrorLabel from '../Error/ErrorLabel';
+
 const Input = ({ type, text, id, name, handleChange, required, error }) => {
   return (
     <div className="mt-4 flex flex-col gap-2">
@@ -14,7 +16,7 @@ const Input = ({ type, text, id, name, handleChange, required, error }) => {
           error && 'border-red-600'
         }`}
       />
-      {error && <span className="text-sm text-red-600">{error}</span>}
+      {error && <ErrorLabel error={error} />}
     </div>
   );
 };

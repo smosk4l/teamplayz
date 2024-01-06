@@ -90,9 +90,9 @@ const createMeeting = asyncHandler(async (req, res) => {
       });
     }
 
-    // const currentDate = new Date();
-    // const timeString = currentDate.toLocaleTimeString();
-    // req.body.time = timeString;
+    const currentDate = new Date();
+    const timeString = currentDate.toLocaleTimeString();
+    req.body.time = timeString;
 
     const meeting = new Meeting({
       owner: req.body.owner,
