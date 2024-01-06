@@ -14,8 +14,13 @@ const upload = multer({ storage: storage });
 app.use(cookieParser());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-app.use(cors());
-app.use
+app.use(
+  cors({
+    origin: 'http://localhost:5173',
+    credentials: true,
+  })
+);
+app.use;
 app.use('/api/meetings', require('./routes/meetingsRoute'));
 app.use('/api/users', require('./routes/userRoute'));
 app.use(errorHandler);

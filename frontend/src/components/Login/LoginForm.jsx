@@ -23,7 +23,11 @@ function Login() {
     setIsLoading(true);
 
     await axios
-      .post('http://localhost:8000/api/users/login', { ...values })
+      .post(
+        'http://localhost:8000/api/users/login',
+        { ...values },
+        { withCredentials: true }
+      )
       .then(({ data }) => {
         setUser(data);
         toast.success('Logowanie powiodło się');
