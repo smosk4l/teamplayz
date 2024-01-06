@@ -3,7 +3,6 @@ const jwt = require('jsonwebtoken');
 const checkAuth = async (req, res, next) => {
   try {
     const token = req.cookies.access_token;
-
     if (!token) {
       return res.status(401).json({ message: 'Unauthorized: Missing token' });
     }

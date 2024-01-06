@@ -14,7 +14,7 @@ const {
 const { check } = require('yargs');
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
-router.get('/', getUser),
+router.get('/user', getUser),
 router.post('/', registerUser);
 router.post('/login', loginUser);
 router.get('/getAuth', checkAuth);
