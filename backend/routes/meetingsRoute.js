@@ -18,7 +18,7 @@ const {
 } = require('../controllers/meetingsController');
 
 router.get('/', getAllMeetings);
-router.get('/public', getPublicMeetings);
+router.post('/public', getPublicMeetings);
 router.get('/distance', getMeetingsByDistance);
 router.get('/byOwner/:id', getMeetingsByOwner);
 router.get('/userMeetings/:id', getUserMeetings);

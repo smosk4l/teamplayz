@@ -60,8 +60,25 @@ const getSingleMeeting = asyncHandler(async (req, res) => {
   });
 });
 
+// const getPublicMeetings = asyncHandler(async (req, res) => {
+//   const { page = 1, limit = 10 } = req.query;
+
+//   try {
+//     const options = {
+//       page: parseInt(page, 10),
+//       limit: parseInt(limit, 10),
+//     };
+
+//     const result = await Meeting.paginate({ private: false }, options);
+
+//     return res.status(200).json(result.docs);
+//   } catch (error) {
+//     return res.status(500).json({ error: 'Internal Server Error' });
+//   }
+// });
+
 const getPublicMeetings = asyncHandler(async (req, res) => {
-  const { page = 1, limit = 10 } = req.query;
+  const { page = 1, limit = 10 } = req.body;
 
   try {
     const options = {
@@ -71,7 +88,9 @@ const getPublicMeetings = asyncHandler(async (req, res) => {
 
     const result = await Meeting.paginate({ private: false }, options);
 
-    return res.status(200).json(result.docs);
+    const totalMeetings = await Meeting.countDocuments({ private: false });
+
+    return res.status(200).json({ meetings: result.docs, totalMeetings });
   } catch (error) {
     return res.status(500).json({ error: 'Internal Server Error' });
   }
