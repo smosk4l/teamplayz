@@ -10,6 +10,9 @@ const {
   updateUser,
   updatePhoto,
   getUser,
+  forgetPassword,
+  resetPassword,
+  checkResetCodeEndpoint,
 } = require('../controllers/userController.js');
 const { check } = require('yargs');
 const storage = multer.memoryStorage();
@@ -17,6 +20,9 @@ const upload = multer({ storage: storage });
 router.get('/user', getUser),
 router.post('/', registerUser);
 router.post('/login', loginUser);
+router.post('/password/forget-password/', forgetPassword);
+router.post('/password/check-reset-password/', checkResetCodeEndpoint);
+router.post('/password/reset-password', resetPassword);
 router.get('/getAuth', checkAuth);
 router.post('/activate/:code', authorizeUser);
 router.post('/image/add', upload.single('photo'), updatePhoto);
