@@ -25,8 +25,9 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    resetPassworCode :{
-      type:String
+    resetPasswordCode :{
+      type:String,
+      deafult : ""
     },
     photo: {
       type: Object,

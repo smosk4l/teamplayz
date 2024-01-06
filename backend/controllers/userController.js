@@ -19,6 +19,7 @@ const registerUserSchema = Joi.object({
   password: Joi.string().required(),
   photo: Joi.string().optional(),
   dateOfBirth: Joi.string().optional(),
+  resetPasswordCode: Joi.string().allow(null).default(null).optional(),
 });
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
@@ -104,7 +105,7 @@ const registerUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const { firstName, lastName, email, password, photo, dateOfBirth } =
+    const { firstName, lastName, email, password, photo, dateOfBirth, resetPasswordCode } =
       req.body;
 
     const userExists = await User.findOne({ email });
@@ -126,17 +127,16 @@ const registerUser = asyncHandler(async (req, res) => {
       activationCode,
       photo,
       dateOfBirth,
-      // resetPasswordCode,
+      resetPasswordCode : ""
     });
 
     if (req.file) {
-      // Handle user photo upload
       user.photo = req.file.buffer;
     }
 
     await user.save();
 
-    const emailResult = await sendEmail(email, activationCode);
+    const emailResult = await sendEmail(email, activationCode, 'activation');
     return res.status(201).json({
       _id: user._id,
       firstName: user.firstName,
@@ -244,6 +244,37 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
+
+
+const forgetPassword = asyncHandler(async (req, res) => {
+  try {
+    const { email } = req.body;
+
+    // Find the user by email
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    // Generate a unique reset code
+    const resetCode = uuid.v4();
+
+    // Save the reset code to the user in the database
+    user.resetPasswordCode = resetCode;
+    await user.save(); // Check this line to ensure that the user object has resetPasswordCode set
+
+    // Send an email with the reset link containing the reset code
+    const emailResult = await sendEmail(email, resetCode, 'passwordReset');
+    
+    return res.status(200).json({ message: 'Password reset link sent successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+
+
 const authorizeUser = asyncHandler(async (req, res) => {
   try {
     const activationCode = req.params.code;
@@ -257,29 +288,67 @@ const authorizeUser = asyncHandler(async (req, res) => {
     user.isAuthorized = true;
     await user.save();
 
+    // Send an email confirming the account activation
+    const emailResult = await sendEmail(user.email, activationCode, 'activation');
+
     return res.status(200).send('Konto zostało pomyślnie aktywowane.');
   } catch (error) {
+    console.error(error);
     return res.status(500).send('Internal Server Error');
   }
 });
 
-// const passwordReset = asyncHandler(async (req, res) => {
-//   try{
-//   const {email} = req.body;
-//   const user = await User.findOne({email});
-//   if(!user){
-//     return res.status(404).send('Nie zanleziono uytkownika o takim adresie e-mail')
-//   } catch (error){
-//     return res.status(400).send("Wystąpił błąd serwera")
-//   }
+
+const resetPassword = asyncHandler(async (req, res) => {
+  try {
+    const { resetCode, newPassword } = req.body;
+
+    // Find the user by reset code
+    const user = await User.findOne({ resetPasswordCode: resetCode });
+
+    if (!user) {
+      return res.status(404).json({ error: 'Invalid or expired reset code' });
+    }
+
+    // Update the user's password
+    const salt = await bcrypt.genSalt(10);
+    const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+    user.password = hashedPassword;
+    user.resetPasswordCode = null; // Reset the reset code after successful password change
+    await user.save();
+
+    return res.status(200).json({ message: 'Password reset successfully' });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
+const checkResetCodeEndpoint = asyncHandler(async (req, res) => {
+  try {
+    const { resetCode } = req.body;
+
+    // Find the user by reset code
+    const user = await User.findOne({ resetPasswordCode: resetCode });
+
+    // Respond with true if the user exists, false otherwise
+    return res.status(200).json({ exists: Boolean(user) });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 
 module.exports = {
   getAuth,
   getUser,
   authorizeUser,
+  checkResetCodeEndpoint,
   registerUser,
   loginUser,
   deleteUser,
   updateUser,
   updatePhoto,
+  resetPassword,
+  forgetPassword,
 };

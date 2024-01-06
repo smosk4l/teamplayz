@@ -26,12 +26,14 @@ router.get('/byOwner/:id', getMeetingsByOwner);
 router.get('/userMeetings/:id', getUserMeetings);
 router.post('/createMeeting', createMeeting);
 router.post('/enterPrivateMeeting/:id', enterPrivateMeeting);
+router.get('/public/single/:id', checkAuth, getSingleMeeting);
 router.post('/private/single/:id', checkAuth, getPrivateMeeting);
 router.put('/:id', updatedMeeting);
 router.delete('/:id', deleteMeeting);
 router.get('/:id/attendees', getAttendeesOfMeeting);
 router.post('/:id/addUser', addUserToMeeting);
 router.get('/marker/points', getMarkerPoints);
+router.get('/:id', checkAuth, getSingleMeeting);
 // router.post('/pushNotification', pushNotification);
 router.get('/:id', checkAuth, getSingleMeeting);
 
