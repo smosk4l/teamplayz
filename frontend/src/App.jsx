@@ -1,17 +1,19 @@
-import useAuthStore from './state/authState'
-import Header from './components/Header/Header'
-import RegisterForm from './components/Register/RegisterForm'
-import LoginForm from './components/Login/LoginForm'
-import MeetingList from './components/Meeting/MeetingList'
-import MeetingForm from './components/Meeting/MeetingForm'
-import MeetingDetails from './components/Meeting/MeetingDetails'
-import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
-import UserMeetings from './components/Meeting/UserMeetings'
-import { ToastContainer } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
+import useAuthStore from './state/authState';
+import Header from './components/Header/Header';
+import RegisterForm from './components/Register/RegisterForm';
+import LoginForm from './components/Login/LoginForm';
+import MeetingList from './components/Meeting/MeetingList';
+import MeetingForm from './components/Meeting/MeetingForm';
+import MeetingDetails from './components/Meeting/MeetingDetails';
+import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
+import UserMeetings from './components/Meeting/UserMeetings';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import useSession from './hooks/useSession';
 
 function App() {
-  const { user } = useAuthStore()
+  const { user } = useAuthStore();
+  useSession();
   return (
     <>
       <HashRouter>
@@ -46,7 +48,7 @@ function App() {
         theme="light"
       />
     </>
-  )
+  );
 }
 
-export default App
+export default App;

@@ -3,6 +3,7 @@ const asyncHandler = require('express-async-handler');
 const User = require('../models/userModel');
 const generateToken = require('../config/getToken');
 const sendEmail = require('../middleware/sendEmail');
+const jwt = require('jsonwebtoken');
 const { checkAuth } = require('../middleware/checkAuth');
 const uuid = require('uuid');
 const Joi = require('joi');
@@ -23,25 +24,29 @@ const registerUserSchema = Joi.object({
 const storage = multer.memoryStorage();
 const upload = multer({ storage: storage });
 
-const getUser = asyncHandler(async (req, res) => {
+const getUserData = async (userId) => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new Error('User not found');
+  }
+
+  const userData = {
+    _id: user._id,
+    firstName: user.firstName,
+    lastName: user.lastName,
+    email: user.email,
+    photo: user.photo,
+    dateOfBirth: user.dateOfBirth,
+  };
+
+  return userData;
+};
+const getAuth = asyncHandler(async (req, res) => {
   try {
-    const user = await User.findById(req.body.id);
-    console.log(req.body.id);
-
-    if (!user) {
-      return res.status(404).json({ error: 'User not found' });
-    }
-
-    // Customize the data you want to send in the response
-    const userData = {
-      _id: user._id,
-      firstName: user.firstName,
-      lastName: user.lastName,
-      email: user.email,
-      photo: user.photo, // Include photo if needed
-      dateOfBirth: user.dateOfBirth, // Include date of birth if needed
-      // Add any other fields you want to include in the response
-    };
+    const token = req.cookies.access_token;
+    const decoded = await jwt.verify(token, process.env.JWT_SECRET);
+    const userData = await getUserData(decoded.userId);
 
     return res.status(200).json(userData);
   } catch (error) {
@@ -50,11 +55,20 @@ const getUser = asyncHandler(async (req, res) => {
   }
 });
 
+const getUser = asyncHandler(async (req, res) => {
+  try {
+    const userData = await getUserData(req.body.id);
+
+    return res.status(200).json(userData);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: 'Internal Server Error' });
+  }
+});
 const updatePhoto = asyncHandler(async (req, res) => {
   try {
     const { userId, name } = req.body;
     const photo = req.file;
-    console.log(req.file);
 
     if (!photo) {
       return res.status(400).json({ error: 'No file uploaded' });
@@ -140,14 +154,15 @@ const loginUser = asyncHandler(async (req, res) => {
   const { email, password } = req.body;
 
   const user = await User.findOne({ email });
-
   if (user && (await bcrypt.compare(password, user.password))) {
     if (user.isAuthorized) {
       const token = generateToken(user._id);
-      console.log(token);
-      return res
+      res
         .cookie('access_token', token, {
           httpOnly: true,
+          maxAge: 3600000, // 1 hour
+          secure: process.env.NODE_ENV === 'production', // set to true if https (in production)
+          sameSite: 'lax', // protection against CSRF attacks
         })
         .status(200)
         .json({
@@ -325,6 +340,7 @@ const checkResetCodeEndpoint = asyncHandler(async (req, res) => {
 });
 
 module.exports = {
+  getAuth,
   getUser,
   authorizeUser,
   checkResetCodeEndpoint,
