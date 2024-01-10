@@ -15,7 +15,6 @@ import Input from '../UI/Form/Input';
 import LoadingCircle from '../UI/LoadingCircle/LoadingCircle';
 import { emailRegex, messages } from '../../utils/constants';
 import { validationSchema } from './validation';
-import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 
 function RegistrationForm() {
   const navigate = useNavigate();
