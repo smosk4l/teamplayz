@@ -5,6 +5,9 @@ import LoginForm from './components/Login/LoginForm';
 import MeetingList from './components/Meeting/MeetingList';
 import MeetingForm from './components/Meeting/MeetingForm';
 import MeetingDetails from './components/Meeting/MeetingDetails';
+import ForgotPassword from './components/ForgotPassword/ForgotPassword';
+import ResetPasswordByCode from './components/Reset/ResetPasswordByCode';
+import NotFoundError from './components/UI/Error/NotFoundError';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import UserMeetings from './components/Meeting/UserMeetings';
 import { ToastContainer } from 'react-toastify';
@@ -22,17 +25,19 @@ function App() {
           <Route path="/signin" element={<RegisterForm />} />
           <Route path="/login" element={<LoginForm />} />
           <Route path="/meetings" element={<MeetingList />} />
-
+          <Route path="/reset-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:id" element={<ResetPasswordByCode />} />
           <Route
             path="/meetings/create"
             element={user ? <MeetingForm /> : <Navigate to="/login" />}
           />
           <Route path="/meetings/:id" element={<MeetingDetails />} />
-
           <Route
             path="/userMeetings/"
             element={user ? <UserMeetings /> : <LoginForm />}
           />
+          <Route path="/404" element={<NotFoundError />} />
+          {/* <Route path="*" element={<NotFoundError />} /> */}
         </Routes>
       </HashRouter>
       <ToastContainer

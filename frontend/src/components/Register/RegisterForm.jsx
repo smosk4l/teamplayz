@@ -1,37 +1,41 @@
-import axios from 'axios'
-import { Form, Formik } from 'formik'
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
-import * as Yup from 'yup'
+import axios from 'axios';
+import { Form, Formik } from 'formik';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import * as Yup from 'yup';
 
-import Navbar from '../Navbar/Navbar'
-import Button from '../UI/Button'
-import Checkbox from '../UI/Form/Checkbox'
-import FormHeading from '../UI/Form/FormHeading'
-import FormSubHeading from '../UI/Form/FormSubHeading'
-import Input from '../UI/Form/Input'
-import LoadingCircle from '../UI/LoadingCircle/LoadingCircle'
-import { emailRegex, messages } from '../../utils/constants'
-import { validationSchema } from './validation'
+import Navbar from '../Navbar/Navbar';
+import Button from '../UI/Button';
+import Checkbox from '../UI/Form/Checkbox';
+import FormHeading from '../UI/Form/FormHeading';
+import FormSubHeading from '../UI/Form/FormSubHeading';
+import Input from '../UI/Form/Input';
+import LoadingCircle from '../UI/LoadingCircle/LoadingCircle';
+import { emailRegex, messages } from '../../utils/constants';
+import { validationSchema } from './validation';
+import { DatePicker } from '@mui/x-date-pickers/DatePicker';
+
 function RegistrationForm() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSubmit = async (values) => {
+    const { confirmPassword, isTermsAccepted, ...rest } = values;
+
     await axios
       .post('http://localhost:8000/api/users/', {
-        ...values,
+        ...rest,
       })
       .then(() => {
-        toast.success('Konto zostało utworzone')
-        navigate('/login')
+        toast.success('Konto zostało utworzone');
+        navigate('/login');
       })
       .catch(({ response }) => {
-        if (response.status === 409) toast.error('User already exists')
-        else toast.error('Something went wrong')
-      })
-  }
+        if (response.status === 409) toast.error('User already exists');
+        else toast.error('Something went wrong');
+      });
+  };
 
   const initialValues = {
     firstName: '',
@@ -40,7 +44,7 @@ function RegistrationForm() {
     password: '',
     confirmPassword: '',
     isTermsAccepted: false,
-  }
+  };
 
   return (
     <>
@@ -136,7 +140,7 @@ function RegistrationForm() {
         )}
       </Formik>
     </>
-  )
+  );
 }
 
-export default RegistrationForm
+export default RegistrationForm;
