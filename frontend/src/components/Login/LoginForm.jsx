@@ -99,7 +99,12 @@ function Login() {
 
                 <label className="text-xs ">
                   I have forgotten my password{' '}
-                  <span className="text-blue-500 underline">Reset</span>
+                  <Link
+                    to={'/reset-password'}
+                    className="text-blue-500 underline"
+                  >
+                    Reset
+                  </Link>
                 </label>
 
                 <Button type={'submit'} text={'Login'} />

@@ -8,6 +8,11 @@ export const messages = {
   createMeetingError: 'Nie udało się stworzyć spotkania',
   createMeeting: 'Spotkanie stworzone',
   max50: 'Maksymalnie 50 znaków',
+  resetPasswordEmail:
+    'Link do resetu hasła został wysłany na podany adres e-mail',
+  resetPasswordEmailError: 'Nie udało się wysłać linku do resetu hasła',
+  resetPasswordSuccess: 'Hasło zostało zresetowane',
+  resetPasswordError: 'Nie udało się zresetować hasła',
 };
 
 export const MAX_MEETING_DURATION = 24 * 60 * 60 * 1000;

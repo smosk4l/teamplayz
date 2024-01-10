@@ -105,8 +105,15 @@ const registerUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const { firstName, lastName, email, password, photo, dateOfBirth, resetPasswordCode } =
-      req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      password,
+      photo,
+      dateOfBirth,
+      resetPasswordCode,
+    } = req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -127,7 +134,7 @@ const registerUser = asyncHandler(async (req, res) => {
       activationCode,
       photo,
       dateOfBirth,
-      resetPasswordCode : ""
+      resetPasswordCode: '',
     });
 
     if (req.file) {
@@ -244,8 +251,6 @@ const updateUser = asyncHandler(async (req, res) => {
   }
 });
 
-
-
 const forgetPassword = asyncHandler(async (req, res) => {
   try {
     const { email } = req.body;
@@ -266,14 +271,15 @@ const forgetPassword = asyncHandler(async (req, res) => {
 
     // Send an email with the reset link containing the reset code
     const emailResult = await sendEmail(email, resetCode, 'passwordReset');
-    
-    return res.status(200).json({ message: 'Password reset link sent successfully' });
+
+    return res
+      .status(200)
+      .json({ message: 'Password reset link sent successfully' });
   } catch (error) {
     console.error(error);
     return res.status(500).json({ error: 'Internal Server Error' });
   }
 });
-
 
 const authorizeUser = asyncHandler(async (req, res) => {
   try {
@@ -289,7 +295,11 @@ const authorizeUser = asyncHandler(async (req, res) => {
     await user.save();
 
     // Send an email confirming the account activation
-    const emailResult = await sendEmail(user.email, activationCode, 'activation');
+    const emailResult = await sendEmail(
+      user.email,
+      activationCode,
+      'activation'
+    );
 
     return res.status(200).send('Konto zostało pomyślnie aktywowane.');
   } catch (error) {
@@ -298,10 +308,9 @@ const authorizeUser = asyncHandler(async (req, res) => {
   }
 });
 
-
 const resetPassword = asyncHandler(async (req, res) => {
   try {
-    const { resetCode, newPassword } = req.body;
+    const { resetCode, password } = req.body;
 
     // Find the user by reset code
     const user = await User.findOne({ resetPasswordCode: resetCode });
@@ -312,8 +321,8 @@ const resetPassword = asyncHandler(async (req, res) => {
 
     // Update the user's password
     const salt = await bcrypt.genSalt(10);
-    const hashedPassword = await bcrypt.hash(newPassword, salt);
-    
+    const hashedPassword = await bcrypt.hash(password, salt);
+
     user.password = hashedPassword;
     user.resetPasswordCode = null; // Reset the reset code after successful password change
     await user.save();
