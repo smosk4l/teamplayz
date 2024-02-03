@@ -8,6 +8,7 @@ import MeetingDetails from './components/Meeting/MeetingDetails';
 import ForgotPassword from './components/ForgotPassword/ForgotPassword';
 import ResetPasswordByCode from './components/Reset/ResetPasswordByCode';
 import NotFoundError from './components/UI/Error/NotFoundError';
+import Faq from './components/Faq/Faq';
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom';
 import UserMeetings from './components/Meeting/UserMeetings';
 import { ToastContainer } from 'react-toastify';
@@ -36,6 +37,7 @@ function App() {
             path="/userMeetings/"
             element={user ? <UserMeetings /> : <LoginForm />}
           />
+          <Route path="faq" element={<Faq />} />
           <Route path="/404" element={<NotFoundError />} />
           {/* <Route path="*" element={<NotFoundError />} /> */}
         </Routes>

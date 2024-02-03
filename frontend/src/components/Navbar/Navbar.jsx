@@ -60,10 +60,7 @@ const Navbar = () => {
           <Link to={'/userMeetings'}>My Meetings</Link>
         </li>
         <li className="hover:text-black ">
-          <a href="#">FAQ</a>
-        </li>
-        <li className="hover:text-black ">
-          <a href="#">Contact</a>
+          <Link to={'/faq'}>FAQ</Link>
         </li>
       </ul>
     </nav>

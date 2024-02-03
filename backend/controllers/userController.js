@@ -312,19 +312,17 @@ const resetPassword = asyncHandler(async (req, res) => {
   try {
     const { resetCode, password } = req.body;
 
-    // Find the user by reset code
     const user = await User.findOne({ resetPasswordCode: resetCode });
 
     if (!user) {
       return res.status(404).json({ error: 'Invalid or expired reset code' });
     }
 
-    // Update the user's password
     const salt = await bcrypt.genSalt(10);
     const hashedPassword = await bcrypt.hash(password, salt);
 
     user.password = hashedPassword;
-    user.resetPasswordCode = null; // Reset the reset code after successful password change
+    user.resetPasswordCode = null;
     await user.save();
 
     return res.status(200).json({ message: 'Password reset successfully' });
