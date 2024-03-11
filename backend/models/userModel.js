@@ -25,17 +25,13 @@ const userSchema = mongoose.Schema(
       type: Boolean,
       default: false,
     },
-    resetPasswordCode :{
-      type:String,
-      deafult : ""
+    resetPasswordCode: {
+      type: String,
+      deafult: '',
     },
     photo: {
       type: Object,
       required: false,
-    },
-    dateOfBirth : {
-      type : Date,
-      required : true,
     },
   },
   {

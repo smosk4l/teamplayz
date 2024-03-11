@@ -12,7 +12,6 @@ const fetcher = async (url: string): Promise<User> => {
 
 const useSession = () => {
   const { user, setUser } = useAuthState();
-  console.log(user);
   const { data, error } = useSWR<User>(
     'http://localhost:8000/api/users/getAuth',
     fetcher
@@ -23,8 +22,6 @@ const useSession = () => {
       setUser(data);
     }
   }, [data]);
-
-  console.log(data);
 
   return {
     user: data,

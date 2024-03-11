@@ -18,7 +18,7 @@ const registerUserSchema = Joi.object({
   email: Joi.string().email().required(),
   password: Joi.string().required(),
   photo: Joi.string().optional(),
-  dateOfBirth: Joi.string().optional(),
+  // dateOfBirth: Joi.string().optional(),
   resetPasswordCode: Joi.string().allow(null).default(null).optional(),
 });
 const storage = multer.memoryStorage();
@@ -37,7 +37,7 @@ const getUserData = async (userId) => {
     lastName: user.lastName,
     email: user.email,
     photo: user.photo,
-    dateOfBirth: user.dateOfBirth,
+    // dateOfBirth: user.dateOfBirth,
   };
 
   return userData;
@@ -105,15 +105,8 @@ const registerUser = asyncHandler(async (req, res) => {
       });
     }
 
-    const {
-      firstName,
-      lastName,
-      email,
-      password,
-      photo,
-      dateOfBirth,
-      resetPasswordCode,
-    } = req.body;
+    const { firstName, lastName, email, password, photo, resetPasswordCode } =
+      req.body;
 
     const userExists = await User.findOne({ email });
 
@@ -133,7 +126,6 @@ const registerUser = asyncHandler(async (req, res) => {
       password: hashedPassword,
       activationCode,
       photo,
-      dateOfBirth,
       resetPasswordCode: '',
     });
 
